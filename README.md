@@ -6,6 +6,7 @@ read heart rate from an ANT+ HRM.
 ## Dependencies
 
 lubusb - https://github.com/libusb/libusb
+
 gtests - https://github.com/google/googletest
 
 ## Building the application
