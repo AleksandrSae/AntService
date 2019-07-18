@@ -15,14 +15,14 @@ Community Edition will work fine) and Linux.
 
 1. Get AntService create directory 'build' got to build (`mkdir build && cd build`)
 2. Create make files by cmake:
-    ..* Linux: `cmake ..`
-    ..* Windows: `cmake -A x64 -G "Visual Studio 16 2019" ..`
+    * Linux: `cmake ..`
+    * Windows: `cmake -A x64 -G "Visual Studio 16 2019" ..`
 3. Build service:
-    ..* Linux: `make`
-    ..* Windows:
-    ...`MSBuild AntService.vcxproj /property:Configuration=Release /property:Platform=x64`
-    ...`MSBuild tests/api_tests.vcxproj /property:Configuration=Release /property:Platform=x64` - build tests
-    ...`MSBuild samples/sample.vcxproj /property:Configuration=Release /property:Platform=x64` - build sample
+    * Linux: `make`
+    * Windows:
+        * `MSBuild AntService.vcxproj /property:Configuration=Release /property:Platform=x64`
+        * `MSBuild tests/api_tests.vcxproj /property:Configuration=Release /property:Platform=x64` - build tests
+        * `MSBuild samples/sample.vcxproj /property:Configuration=Release /property:Platform=x64` - build sample
 
 ## SetUp environment
 
