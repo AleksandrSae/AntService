@@ -22,4 +22,4 @@ addons:
             - ubuntu-toolchain-r-test
 
 script:
-    - ./autogen.sh && make clean && make
+    - mkdir build && cd build && cmake .. && make
