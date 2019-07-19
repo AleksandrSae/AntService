@@ -1,0 +1,25 @@
+language: c
+
+matrix:
+    include:
+        - os: linux
+          dist: trusty
+          sudo: required
+          compiler: gcc
+
+addons:
+    homebrew:
+        update: true
+        brewfile: true
+    apt:
+        packages:
+            - autoconf
+            - automake
+            - libtool
+            - m4
+            - libudev-dev
+        sources:
+            - ubuntu-toolchain-r-test
+
+script:
+    - ./autogen.sh && make clean && make
