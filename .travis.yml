@@ -9,10 +9,13 @@ matrix:
 
 addons:
     homebrew:
+        packages:
+            - gcc@4.9
         update: true
         brewfile: true
     apt:
         packages:
+            - g++-4.9
             - autoconf
             - automake
             - libtool
