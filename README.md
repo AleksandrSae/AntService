@@ -38,3 +38,4 @@ To run the application, open a command window and type:
 
 The application will try to find the ANT+ USB stick and connect to the heart
 rate monitor.
+
