@@ -48,189 +48,10 @@
 // When this is defined, some debug info is printed to std::cerr
 // #define DEBUG_OUTPUT 1
 
-namespace {
+using namespace ant_stick;
 
-    static const int MaxTries = 50;
 
-enum ChannelType {
-    BIDIRECTIONAL_RECEIVE = 0x00,
-    BIDIRECTIONAL_TRANSMIT = 0x10,
-
-    SHARED_BIDIRECTIONAL_RECEIVE = 0x20,
-    SHARED_BIDIRECTIONAL_TRANSMIT = 0x30,
-
-    UNIDIRECTIONAL_RECEIVE_ONLY = 0x40,
-    UNIDIRECTIONAL_TRANSMIT_ONLY = 0x50
-};
-
-void CheckChannelResponse (
-    const Buffer &response, uint8_t channel, uint8_t cmd, uint8_t status)
-{
-#if !defined(FAKE_CALL)
-    if (response.size() < 6
-        || response[2] != CHANNEL_RESPONSE
-        || response[3] != channel
-        || response[4] != cmd
-        || response[5] != status)
-    {
-#if defined (DEBUG_DUMP)
-        DumpData(&response[0], response.size(), std::cerr);
-        std::cerr << "expecting channel: " << (int)channel
-                  << ", cmd  " << (int)cmd << ", status " << (int)status << "\n";
-#endif
-        // Funny thing: this function is also called from a destructor while
-        // an exception is being unwound.  Don't cause further trouble...
-        if (! std::uncaught_exception())
-            throw std::runtime_error ("CheckChannelResponse -- bad response");
-    }
-#endif
-}
-
-void AddMessageChecksum (Buffer &b)
-{
-    uint8_t c = 0;
-    std::for_each (b.begin(), b.end(), [&](uint8_t e) { c ^= e; });
-    b.push_back (c);
-}
-
-Buffer MakeMessage (AntMessageId id, uint8_t data)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (0x01);                 // data length
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data);
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (0x02);                 // data length
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data0);
-    b.push_back (data1);
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id,
-                    uint8_t data0, uint8_t data1, uint8_t data2)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (0x03);                 // data length
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data0);
-    b.push_back (data1);
-    b.push_back (data2);
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id,
-                    uint8_t data0, uint8_t data1, uint8_t data2,
-                    uint8_t data3, uint8_t data4)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (0x05);                 // data length
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data0);
-    b.push_back (data1);
-    b.push_back (data2);
-    b.push_back (data3);
-    b.push_back (data4);
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id, Buffer data)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (static_cast<uint8_t>(data.size()));
-    b.push_back (static_cast<uint8_t>(id));
-    b.insert (b.end(), data.begin(), data.end());
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id, uint8_t data0, const Buffer &data)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (static_cast<uint8_t>(data.size() + 1));
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data0);
-    b.insert (b.end(), data.begin(), data.end());
-    AddMessageChecksum (b);
-    return b;
-}
-
-Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1, const Buffer &data)
-{
-    Buffer b;
-    b.push_back (SYNC_BYTE);
-    b.push_back (static_cast<uint8_t>(data.size() + 2));
-    b.push_back (static_cast<uint8_t>(id));
-    b.push_back (data0);
-    b.push_back(data1);
-    b.insert (b.end(), data.begin(), data.end());
-    AddMessageChecksum (b);
-    return b;
-}
-
-struct ChannelEventName {
-    AntChannelEvent event;
-    const char *text;
-} g_ChanelEventNames[] = {
-    { RESPONSE_NO_ERROR, "no error" },
-    { EVENT_RX_SEARCH_TIMEOUT, "channel search timeout" },
-    { EVENT_RX_FAIL, "rx fail" },
-    { EVENT_TX, "broadcast tx complete" },
-    { EVENT_TRANSFER_RX_FAILED, "rx transfer fail" },
-    { EVENT_TRANSFER_TX_COMPLETED, "tx complete" },
-    { EVENT_TRANSFER_TX_FAILED, "tx fail" },
-    { EVENT_CHANNEL_CLOSED, "channel closed" },
-    { EVENT_RX_FAIL_GO_TO_SEARCH, "dropped to search mode" },
-    { EVENT_CHANNEL_COLLISION, "channel collision" },
-    { EVENT_TRANSFER_TX_START, "burst transfer start" },
-    { EVENT_TRANSFER_NEXT_DATA_BLOCK, "burst next data block" },
-    { CHANNEL_IN_WRONG_STATE, "channel in wrong state" },
-    { CHANNEL_NOT_OPENED, "channel not opened" },
-    { CHANNEL_ID_NOT_SET, "channel id not set" },
-    { CLOSE_ALL_CHANNELS, "all channels closed" },
-    { TRANSFER_IN_PROGRESS, "transfer in progress" },
-    { TRANSFER_SEQUENCE_NUMBER_ERROR, "transfer sequence error" },
-    { TRANSFER_IN_ERROR, "burst transfer error" },
-    { MESSAGE_SIZE_EXCEEDS_LIMIT, "message too big" },
-    { INVALID_MESSAGE, "invalid message" },
-    { INVALID_NETWORK_NUMBER, "invalid network number" },
-    { INVALID_LIST_ID, "invalid list id" },
-    { INVALID_SCAN_TX_CHANNEL, "attempt to transmit in ANT channel 0 in scan mode" },
-    { INVALID_PARAMETER_PROVIDED, "invalid parameter" },
-    { EVENT_SERIAL_QUE_OVERFLOW, "output serial overflow" },
-    { EVENT_QUE_OVERFLOW, "input serial overflow" },
-    { ENCRYPT_NEGOTIATION_SUCCESS, "encrypt negotiation success" },
-    { ENCRYPT_NEGOTIATION_FAIL, "encrypt negotiation fail" },
-    { NVM_FULL_ERROR, "nvm full" },
-    { NVM_WRITE_ERROR, "nvm write fail" },
-    { USB_STRING_WRITE_FAIL, "usb write fail" },
-    { MESG_SERIAL_ERROR_ID, "bad usb packet received" },
-    { LAST_EVENT_ID, nullptr}};
-
-std::ostream& operator<< (std::ostream &out, const AntChannel::Id &id)
-{
-    out << "#<ID Type = " << (int)id.DeviceType << "; Number = " << id.DeviceNumber << ">";
-    return out;
-}
-
-};                                      // end anonymous namespace
-
-const char *ChannelEventAsString(AntChannelEvent e)
+const char *ChannelEventAsString(ant_stick::AntChannelEvent e)
 {
     for (int i = 0; g_ChanelEventNames[i].event != LAST_EVENT_ID; i++) {
         if (g_ChanelEventNames[i].event == e)
@@ -444,7 +265,7 @@ void AntChannel::OnChannelResponseMessage (const uint8_t *data, int size)
     assert(data[2] == CHANNEL_RESPONSE);
 
     auto msg_id = data[4];
-    auto event = static_cast<AntChannelEvent>(data[5]);
+    auto event = static_cast<ant_stick::AntChannelEvent>(data[5]);
     // msg_id should be 1 if it is a general event and an message ID if it
     // is a response to an channel message we sent previously.  We don't
     // expect chanel responses here
@@ -559,7 +380,7 @@ void AntChannel::OnStateChanged (State old_state, State new_state)
     // interested in state changes can just ignore this.
 }
 
-void AntChannel::OnAcknowledgedDataReply(int tag, AntChannelEvent event)
+void AntChannel::OnAcknowledgedDataReply(int tag, ant_stick::AntChannelEvent event)
 {
     // do nothing.  An implementation is provided so any derived classes not
     // interested in ack data replies can just ignore this.

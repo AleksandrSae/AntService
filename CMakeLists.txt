@@ -2,14 +2,15 @@ cmake_minimum_required ( VERSION 3.4.0 )
 
 project ( AntService CXX )
 
-set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
 
 set ( TTY_USB TRUE )
 
 include(ExternalProject)
 
 if (UNIX)
-    if ( NOT TTY_USB ) # Use system libusb, check libusb-dev package for Ubuntu
+    if ( NOT TTY_USB ) # If system libusb is not present try dowload from github
+                       # (there is the libusb-dev package for Ubuntu)
         ExternalProject_Add ( libusb-1.0
             PREFIX libusb-1.0
             GIT_REPOSITORY "https://github.com/libusb/libusb.git"
@@ -79,5 +80,5 @@ else (UNIX)
     target_link_libraries( AntService ${CMAKE_BINARY_DIR}/../lib_usb/lib/libusb-1.0.lib )
 endif (UNIX)
 
-add_subdirectory( tests )
+#add_subdirectory( tests )
 add_subdirectory( samples )

@@ -47,7 +47,7 @@ AntMessageWriter::~AntMessageWriter()
     * (there is no buffering on the application side). An exception is thrown if
     * there is an error or a timeout.
     */
-void AntMessageWriter::WriteMessage(const Buffer &message)
+void AntMessageWriter::WriteMessage(const ant_stick::Buffer &message)
 {
     assert(!m_Active);
     m_Buffer = message;

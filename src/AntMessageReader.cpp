@@ -27,6 +27,8 @@
 #include "winsock2.h" // for struct timeval
 #endif
 
+using namespace ant_stick;
+
 bool IsGoodChecksum(const Buffer &message)
 {
 #if !defined(FAKE_CALL)

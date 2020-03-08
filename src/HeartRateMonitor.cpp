@@ -30,6 +30,7 @@
  */
 
 using namespace HRM;
+using namespace ant_stick;
 
 HeartRateMonitor::HeartRateMonitor (AntStick *stick, uint32_t device_number)
     : AntChannel(

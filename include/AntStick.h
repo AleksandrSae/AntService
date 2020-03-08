@@ -31,13 +31,11 @@
 
 #include "AntStickCommon.h"
 
-typedef std::vector<uint8_t> Buffer;
-
 class AntMessageReader;
 class AntMessageWriter;
 class AntStick;
 
-const char *ChannelEventAsString(AntChannelEvent e);
+const char *ChannelEventAsString(ant_stick::AntChannelEvent e);
 
 
 // ......................................................... AntChannel ....
@@ -121,7 +119,7 @@ protected:
         * called with 'tag' and the result of the transmission.  If the
         * transmission fails, it will not be retried.
         */
-    void SendAcknowledgedData(int tag, const Buffer &message);
+    void SendAcknowledgedData(int tag, const ant_stick::Buffer &message);
 
     /** Ask a master device to transmit data page identified by 'page_id'.
         * The master will only send some data pages are only sent when requested
@@ -157,7 +155,7 @@ private:
         * retried, the derived class can try again by calling
         * SendAcknowledgedData()
         */
-    virtual void OnAcknowledgedDataReply(int tag, AntChannelEvent event);
+    virtual void OnAcknowledgedDataReply(int tag, ant_stick::AntChannelEvent event);
 
 private:
 
@@ -173,10 +171,10 @@ private:
         * SendAcknowledgedData() queues them up.
         */
     struct AckDataItem {
-        AckDataItem(int t, const Buffer &d)
+        AckDataItem(int t, const ant_stick::Buffer &d)
             : tag(t), data(d) {}
         int tag;
-        Buffer data;
+        ant_stick::Buffer data;
     };
 
     /** Queue of ACKNOWLEDGE_DATA messages waiting to be sent.
@@ -246,8 +244,8 @@ public:
     int GetMaxChannels() const { return m_MaxChannels; }
     int GetNetwork() const { return m_Network; }
 
-    void WriteMessage(const Buffer &b);
-    const Buffer& ReadMessage();
+    void WriteMessage(const ant_stick::Buffer &b);
+    const ant_stick::Buffer& ReadMessage();
 
     void Tick();
 
@@ -261,7 +259,7 @@ private:
     void UnregisterChannel(AntChannel *c);
     int NextChannelId() const;
 
-    bool MaybeProcessMessage(const Buffer &message);
+    bool MaybeProcessMessage(const ant_stick::Buffer &message);
 
     libusb_device *m_Device;
     libusb_device_handle *m_DeviceHandle;
@@ -273,8 +271,8 @@ private:
 
     int m_Network;
 
-    std::queue <Buffer> m_DelayedMessages;
-    Buffer m_LastReadMessage;
+    std::queue <ant_stick::Buffer> m_DelayedMessages;
+    ant_stick::Buffer m_LastReadMessage;
 
     std::unique_ptr<AntMessageReader> m_Reader;
     std::unique_ptr<AntMessageWriter> m_Writer;
@@ -301,12 +299,12 @@ public:
 #endif
     ~AntMessageReader();
 
-    void MaybeGetNextMessage(Buffer &message);
-    void GetNextMessage(Buffer &message);
+    void MaybeGetNextMessage(ant_stick::Buffer &message);
+    void GetNextMessage(ant_stick::Buffer &message);
 
 private:
 
-    void GetNextMessage1(Buffer &message);
+    void GetNextMessage1(ant_stick::Buffer &message);
 
     static void LIBUSB_CALL Trampoline(libusb_transfer *);
     void SubmitUsbTransfer();
@@ -318,7 +316,7 @@ private:
 
     /** Hold partial data received from the USB stick.  A single USB read
         * might not return an entire ANT message. */
-    Buffer m_Buffer;
+    ant_stick::Buffer m_Buffer;
     unsigned m_Mark;            // buffer position up to where data is available
     bool m_Active;              // is there a transfer active?
 };
@@ -339,7 +337,7 @@ public:
 #endif
     ~AntMessageWriter();
 
-    void WriteMessage(const Buffer &message);
+    void WriteMessage(const ant_stick::Buffer &message);
 
 private:
 
@@ -351,7 +349,7 @@ private:
     uint8_t m_Endpoint;
     libusb_transfer *m_Transfer;
 
-    Buffer m_Buffer;
+    ant_stick::Buffer m_Buffer;
     bool m_Active;                      // is there a transfer active?
 };
 

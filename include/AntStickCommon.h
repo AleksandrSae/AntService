@@ -1,7 +1,10 @@
-#ifndef ANT_STICK_COMMON_H
-#define ANT_STICK_COMMON_H
+#pragma once
 
 #define TIMEOUT 2000
+
+namespace ant_stick {
+
+typedef std::vector<uint8_t> Buffer;
 
 enum AntMessageId {
     SYNC_BYTE = 0xA4,
@@ -103,4 +106,68 @@ enum AntChannelEvent {
 enum TransmissionType {
     ANT_INDEPENDENT_CHANNEL = 0x01
 };
-#endif
+
+constexpr int MaxTries = 50;
+
+enum ChannelType {
+    BIDIRECTIONAL_RECEIVE = 0x00,
+    BIDIRECTIONAL_TRANSMIT = 0x10,
+
+    SHARED_BIDIRECTIONAL_RECEIVE = 0x20,
+    SHARED_BIDIRECTIONAL_TRANSMIT = 0x30,
+
+    UNIDIRECTIONAL_RECEIVE_ONLY = 0x40,
+    UNIDIRECTIONAL_TRANSMIT_ONLY = 0x50
+};
+
+struct ChannelEventName {
+    AntChannelEvent event;
+    const char *text;
+} static g_ChanelEventNames[] = {
+    { RESPONSE_NO_ERROR, "no error" },
+    { EVENT_RX_SEARCH_TIMEOUT, "channel search timeout" },
+    { EVENT_RX_FAIL, "rx fail" },
+    { EVENT_TX, "broadcast tx complete" },
+    { EVENT_TRANSFER_RX_FAILED, "rx transfer fail" },
+    { EVENT_TRANSFER_TX_COMPLETED, "tx complete" },
+    { EVENT_TRANSFER_TX_FAILED, "tx fail" },
+    { EVENT_CHANNEL_CLOSED, "channel closed" },
+    { EVENT_RX_FAIL_GO_TO_SEARCH, "dropped to search mode" },
+    { EVENT_CHANNEL_COLLISION, "channel collision" },
+    { EVENT_TRANSFER_TX_START, "burst transfer start" },
+    { EVENT_TRANSFER_NEXT_DATA_BLOCK, "burst next data block" },
+    { CHANNEL_IN_WRONG_STATE, "channel in wrong state" },
+    { CHANNEL_NOT_OPENED, "channel not opened" },
+    { CHANNEL_ID_NOT_SET, "channel id not set" },
+    { CLOSE_ALL_CHANNELS, "all channels closed" },
+    { TRANSFER_IN_PROGRESS, "transfer in progress" },
+    { TRANSFER_SEQUENCE_NUMBER_ERROR, "transfer sequence error" },
+    { TRANSFER_IN_ERROR, "burst transfer error" },
+    { MESSAGE_SIZE_EXCEEDS_LIMIT, "message too big" },
+    { INVALID_MESSAGE, "invalid message" },
+    { INVALID_NETWORK_NUMBER, "invalid network number" },
+    { INVALID_LIST_ID, "invalid list id" },
+    { INVALID_SCAN_TX_CHANNEL, "attempt to transmit in ANT channel 0 in scan mode" },
+    { INVALID_PARAMETER_PROVIDED, "invalid parameter" },
+    { EVENT_SERIAL_QUE_OVERFLOW, "output serial overflow" },
+    { EVENT_QUE_OVERFLOW, "input serial overflow" },
+    { ENCRYPT_NEGOTIATION_SUCCESS, "encrypt negotiation success" },
+    { ENCRYPT_NEGOTIATION_FAIL, "encrypt negotiation fail" },
+    { NVM_FULL_ERROR, "nvm full" },
+    { NVM_WRITE_ERROR, "nvm write fail" },
+    { USB_STRING_WRITE_FAIL, "usb write fail" },
+    { MESG_SERIAL_ERROR_ID, "bad usb packet received" },
+    { LAST_EVENT_ID, nullptr}};
+
+void AddMessageChecksum (Buffer &b);
+void CheckChannelResponse(const Buffer &response, uint8_t channel, uint8_t cmd, uint8_t status);
+Buffer MakeMessage (AntMessageId id, uint8_t data);
+Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1);
+Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1, uint8_t data2);
+Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1, uint8_t data2, uint8_t data3, uint8_t data4);
+Buffer MakeMessage (AntMessageId id, Buffer data);
+Buffer MakeMessage (AntMessageId id, uint8_t data0, const Buffer &data);
+Buffer MakeMessage (AntMessageId id, uint8_t data0, uint8_t data1, const Buffer &data);
+
+
+};
