@@ -40,8 +40,6 @@ endif ( TTY_USB )
 
 include_directories (
   include
-  API/include
-  tools/include
   ${LIBUSB_INCLUDE_DIR}
 )
 
@@ -51,14 +49,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set ( SOURCE_LIB
-        API/src/TrainerControl_dll.cpp
-        src/AntStick.cpp
-        src/AntMessageReader.cpp
-        src/AntMessageWriter.cpp
-        src/SearchService.cpp
-        src/TelemetryServer.cpp
-        src/HeartRateMonitor.cpp
-        tools/src/Tools.cpp
+        src/Device.cpp
+        src/TtyUsbDevice.cpp
 )
 
 add_library( AntService SHARED ${SOURCE_LIB} )
