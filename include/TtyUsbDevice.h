@@ -4,6 +4,9 @@
 #include "Device.h"
 #include <string>
 
+// For testing purpose
+#include <iostream>
+
 class TtyUsbDevice: public Device {
 public:
     void Read(Buffer *buff) override;
@@ -12,7 +15,7 @@ public:
     void Disconnect();
 
     typedef int FileDescriptorType;
-    
+
     ~TtyUsbDevice();
 
 private:
@@ -21,4 +24,4 @@ private:
     FileDescriptorType m_tty_usb_file = 0;
     struct termios m_tty = {0};
     bool m_connected = false;
-}; 
+};
