@@ -73,13 +73,13 @@ void TtyUsbDevice::Disconnect() {
     }
 }
 
-void TtyUsbDevice::Write(const Buffer & buff) {
+void TtyUsbDevice::Write(const std::vector<uint8_t> & buff) {
     if (m_connected)
         write(m_tty_usb_file, &buff[0], buff.size());
 }
 
 
-void TtyUsbDevice::Read(Buffer *buff) {
+void TtyUsbDevice::Read(std::vector<uint8_t> *buff) {
     if (!m_connected) return;
 
     char read_buf[256] = {0};

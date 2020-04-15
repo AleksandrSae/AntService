@@ -4,13 +4,10 @@
 #include "Device.h"
 #include <string>
 
-// For testing purpose
-#include <iostream>
-
 class TtyUsbDevice: public Device {
 public:
-    void Read(Buffer *buff) override;
-    void Write(const Buffer &) override;
+    void Read(std::vector<uint8_t> *buff) override;
+    void Write(const std::vector<uint8_t> &) override;
     void Connect() override;
     void Disconnect();
 

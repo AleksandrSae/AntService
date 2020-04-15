@@ -5,13 +5,14 @@
 
 class Device {
 public:
-    virtual void Read(Buffer *buff) = 0;
-    virtual void Write(const Buffer &) = 0;
+    virtual void Read(std::vector<uint8_t> *buff) = 0;
+    virtual void Write(const std::vector<uint8_t> &) = 0;
     virtual void Connect() = 0;
     virtual ~Device() {}
     Device() {}
     Device(const Device &dev)
     {
-        LOG_MSG("Copy constructor worked here!");
+        LOG_FUNC;
+        //LOG_MSG("Copy constructor worked here!");
     }
 };

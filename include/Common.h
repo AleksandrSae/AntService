@@ -1,8 +1,5 @@
 #pragma once
 
-#include <vector>
-#include <cstdint>
-
 #include <iostream>
 #include <algorithm>
 #include <sstream>
@@ -40,28 +37,25 @@ private:
 #define LOG_ERR(msg)
 #endif
 
-typedef std::vector<uint8_t> Buffer;
-typedef uint8_t BufferItemType;
 
-
-inline BufferItemType MessageChecksum (const Buffer& msg)
+inline uint8_t MessageChecksum (const std::vector<uint8_t>& msg)
 {
     LOG_FUNC;
 
-    BufferItemType checksum = 0;
-    std::for_each (msg.begin(), msg.end(), [&](BufferItemType item) { checksum ^= item; });
+    uint8_t checksum = 0;
+    std::for_each (msg.begin(), msg.end(), [&](uint8_t item) { checksum ^= item; });
     return checksum;
 }
 
 
-inline Buffer Message(ant::MessageId id, const Buffer& data) {
+inline std::vector<uint8_t> Message(ant::MessageId id, const std::vector<uint8_t>& data) {
     LOG_FUNC;
 
-    Buffer yield;
+    std::vector<uint8_t> yield;
 
-    yield.push_back(static_cast<BufferItemType>(ant::SYNC_BYTE));
-    yield.push_back(static_cast<BufferItemType>(data.size()));
-    yield.push_back(static_cast<BufferItemType>(id));
+    yield.push_back(static_cast<uint8_t>(ant::SYNC_BYTE));
+    yield.push_back(static_cast<uint8_t>(data.size()));
+    yield.push_back(static_cast<uint8_t>(id));
     yield.insert(yield.end(), data.begin(), data.end());
     yield.push_back(MessageChecksum(yield));
 
@@ -69,7 +63,7 @@ inline Buffer Message(ant::MessageId id, const Buffer& data) {
 }
 
 
-inline std::string MessageDump(const Buffer& data) {
+inline std::string MessageDump(const std::vector<uint8_t>& data) {
     std::stringstream dump;
 
     for (auto item : data) {
@@ -78,4 +72,3 @@ inline std::string MessageDump(const Buffer& data) {
 
     return dump.str();
 }
-

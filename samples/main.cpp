@@ -7,32 +7,19 @@ int main() {
     stick.AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice()));
 
     stick.Connect();
-
     stick.Reset();
-
     stick.Connect();
-
-    //Buffer test_message {'H', 'e', 'l', 'l', 'o', '\n'};
-    //stick.WriteMsg(std::move(test_message));
     stick.QueryInfo();
+    stick.Init();
 
-    Buffer input = Buffer();
-    stick.ReadMsg(&input);
-    for (auto symbol : input) {
-        std::cout << symbol;
+    std::vector<uint8_t> input;
+
+    for (int i=0; i<100; i++) {
+        stick.ReadMsg(&input);
+        for (auto symbol : input) {
+            std::cout << symbol;
+        }
     }
-    /*
-    TtyUsbDevice tty = TtyUsbDevice();
 
-    tty.Connect();
-
-    Buffer test_message {'H', 'e', 'l', 'l', 'o'};
-    tty.Write(test_message);
-
-    Buffer buff = Buffer();
-    tty.Read(&buff);
-
-    for (auto symbol : buff ) {
-        std::cout << symbol;
-    }
-*/ return 0; }
+    return 0;
+}

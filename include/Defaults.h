@@ -1,6 +1,8 @@
 #pragma once
 
 #include <termios.h> // POSIX terminal control definitions
+#include <cstdint>
+#include <vector>
 
 #define DEFAULT_TTY_USB_DEVICE_NAME "/dev/ttyUSB0"
 #define DEFAULT_TTY_USB_DEVICE_BAUDRATE B115200
@@ -65,6 +67,13 @@ enum MessageId {
 enum error {
     NO_ERROR = 0,
     NOT_CONNECTED,
-    UNEXPECTED_MESSAGE
+    UNEXPECTED_MESSAGE,
+    BAD_CHANNEL_RESPONSE
 };
+
+const uint8_t Default_network = 0;
+
+const std::vector<uint8_t> AntPlusNetworkKey {
+    Default_network, 0xB9, 0xA5, 0x21, 0xFB, 0xBD, 0x72, 0xC3, 0x45 };
+
 }
