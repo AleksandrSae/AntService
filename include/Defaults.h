@@ -3,9 +3,26 @@
 #include <termios.h> // POSIX terminal control definitions
 #include <cstdint>
 #include <vector>
+#include <bitset>
 
 #define DEFAULT_TTY_USB_DEVICE_NAME "/dev/ttyUSB0"
 #define DEFAULT_TTY_USB_DEVICE_BAUDRATE B115200
+
+namespace HRM {
+
+    // Values taken from the HRM ANT+ Device Profile document
+    enum {
+        ANT_DEVICE_TYPE = 0x78,
+        CHANNEL_PERIOD = 8070,
+        CHANNEL_FREQUENCY = 57,
+        SEARCH_TIMEOUT = 30
+    };
+
+    enum {
+        STALE_TIMEOUT = 5000
+    };
+
+};
 
 namespace ant {
 enum MessageId {
@@ -64,11 +81,25 @@ enum MessageId {
     RESPONSE_SERIAL_NUMBER = 0x61
 };
 
-enum error {
+enum error_types {
     NO_ERROR = 0,
     NOT_CONNECTED,
     UNEXPECTED_MESSAGE,
-    BAD_CHANNEL_RESPONSE
+    BAD_CHANNEL_RESPONSE,
+    _ERROR_TYPES_COUNT
+};
+
+typedef std::bitset<_ERROR_TYPES_COUNT> error;
+
+enum ChannelType {
+    BIDIRECTIONAL_RECEIVE = 0x00,
+    BIDIRECTIONAL_TRANSMIT = 0x10,
+
+    SHARED_BIDIRECTIONAL_RECEIVE = 0x20,
+    SHARED_BIDIRECTIONAL_TRANSMIT = 0x30,
+
+    UNIDIRECTIONAL_RECEIVE_ONLY = 0x40,
+    UNIDIRECTIONAL_TRANSMIT_ONLY = 0x50
 };
 
 const uint8_t Default_network = 0;

@@ -16,9 +16,8 @@ int main() {
 
     for (int i=0; i<100; i++) {
         stick.ReadMsg(&input);
-        for (auto symbol : input) {
-            std::cout << symbol;
-        }
+        std::cout << MessageDump(input);
+        input.clear();
     }
 
     return 0;

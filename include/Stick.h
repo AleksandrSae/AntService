@@ -56,6 +56,10 @@ public:
 
     void Init() {
         set_network_key(ant::AntPlusNetworkKey);
+        assign_channel(0, 0);
+        set_channel_id(0, 0, HRM::ANT_DEVICE_TYPE);
+        configure_channel(0, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
+        open_channel(0);
     }
 
     ant::error Reset();
@@ -67,8 +71,12 @@ private:
     ant::error set_network_key(const std::vector<uint8_t> & network_key);
     ant::error do_command(const std::vector<uint8_t> &message,
                           std::function<ant::error (const std::vector<uint8_t>&)> check);
-    ant::error check_channel_response (const std::vector<uint8_t> &response,
-                                       uint8_t channel, uint8_t cmd, uint8_t status);
+    ant::error check_channel_response(const std::vector<uint8_t> &response,
+                                      uint8_t channel, uint8_t cmd, uint8_t status);
+    ant::error assign_channel(uint8_t channel_number, uint8_t network_key);
+    ant::error set_channel_id(uint8_t channel_number, uint32_t device_number, uint8_t device_type);
+    ant::error configure_channel(uint8_t channel_number, uint32_t period, uint8_t timeout, uint8_t frequency);
+    ant::error open_channel(uint8_t channel_number);
 
 private:
     std::unique_ptr<Device> m_device;
