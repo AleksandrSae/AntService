@@ -14,8 +14,8 @@ int main() {
 
     std::vector<uint8_t> input;
 
-    for (int i=0; i<100; i++) {
-        stick.ReadMsg(&input);
+    for (int i=0; i<500; i++) {
+        stick.ReadMsg(input);
         std::cout << MessageDump(input);
         input.clear();
     }

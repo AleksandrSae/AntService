@@ -73,32 +73,58 @@ void TtyUsbDevice::Disconnect() {
     }
 }
 
-void TtyUsbDevice::Write(const std::vector<uint8_t> & buff) {
+void TtyUsbDevice::Write(const std::vector<uint8_t> &buff) {
     if (m_connected)
         write(m_tty_usb_file, &buff[0], buff.size());
 }
 
-
-void TtyUsbDevice::Read(std::vector<uint8_t> *buff) {
+void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
     if (!m_connected) return;
 
     char read_buf[256] = {0};
-    constexpr uint32_t max_total_bytes = 65535;
+
+    uint32_t num_bytes = 0;
     uint32_t total_bytes = 0;
 
-    while (total_bytes < max_total_bytes) { 
-        uint32_t num_bytes = read(m_tty_usb_file, &read_buf, sizeof(read_buf));
-        if (num_bytes == 0) break;
+    do {
+        num_bytes = read(m_tty_usb_file, &read_buf, sizeof(read_buf));
 
         if (num_bytes < 0) {
             std::cerr << "Error reading: " << errno << " : " << strerror(errno) << std::endl;
-            return; 
+            return;
         }
 
         for (unsigned int i = 0; i < num_bytes; i++) {
-            buff->push_back(read_buf[i]);
+            buff.push_back(read_buf[i]);
         }
 
         total_bytes += num_bytes;
-    }
+    } while (total_bytes <= 4);
+}
+
+bool TtyUsbDevice::ReadNextMessage(std::vector<uint8_t> &message) {
+    LOG_FUNC;
+
+    // Try to find SYNC_BYTE
+    do {
+        auto itt = std::find(stored_chunck_.begin(), stored_chunck_.end(), ant::SYNC_BYTE);
+        if (itt != stored_chunck_.end()) {
+            stored_chunck_.erase(stored_chunck_.begin(), itt);
+            break;
+        }
+        Read(stored_chunck_);
+    } while(true);
+
+    // If message size <4 get new portion
+    while (stored_chunck_.size() < 4)
+        Read(stored_chunck_);
+
+    unsigned int len = (unsigned int)stored_chunck_[1] + 4; // Total lenght is SYNC + LEN + MSGID + DATA  
+    while (stored_chunck_.size() < len)
+        Read(stored_chunck_);
+
+    message = std::vector<uint8_t>(stored_chunck_.begin(), stored_chunck_.begin() + len);
+    stored_chunck_.erase(stored_chunck_.begin(), stored_chunck_.begin() + len);
+
+    return true;
 }

@@ -31,12 +31,7 @@ public:
         m_state = CONNECTED;
     }
 
-    void WriteMsg(std::vector<uint8_t>&& buff) {
-        LOG_FUNC;
-        m_device->Write(buff);
-    }
-
-    void ReadMsg(std::vector<uint8_t>* buff) {
+    void ReadMsg(std::vector<uint8_t> &buff) {
         LOG_FUNC;
         m_device->Read(buff);
     }
@@ -70,7 +65,8 @@ private:
     ant::error get_capabilities(int& max_channels, int& max_networks);
     ant::error set_network_key(const std::vector<uint8_t> & network_key);
     ant::error do_command(const std::vector<uint8_t> &message,
-                          std::function<ant::error (const std::vector<uint8_t>&)> check);
+                          std::function<ant::error (const std::vector<uint8_t>&)> check,
+                          uint8_t response_msg_type);
     ant::error check_channel_response(const std::vector<uint8_t> &response,
                                       uint8_t channel, uint8_t cmd, uint8_t status);
     ant::error assign_channel(uint8_t channel_number, uint8_t network_key);

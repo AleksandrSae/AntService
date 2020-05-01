@@ -6,14 +6,15 @@
 
 class TtyUsbDevice: public Device {
 public:
-    void Read(std::vector<uint8_t> *buff) override;
-    void Write(const std::vector<uint8_t> &) override;
-    void Connect() override;
-    void Disconnect();
+    virtual void Read(std::vector<uint8_t> &) override;
+    virtual bool ReadNextMessage(std::vector<uint8_t> &) override;
+    virtual void Write(const std::vector<uint8_t> &) override;
+    virtual void Connect() override;
+    virtual void Disconnect() override;
 
     typedef int FileDescriptorType;
 
-    ~TtyUsbDevice();
+    virtual ~TtyUsbDevice() override;
 
 private:
     std::string m_device_name = DEFAULT_TTY_USB_DEVICE_NAME;
@@ -21,4 +22,5 @@ private:
     FileDescriptorType m_tty_usb_file = 0;
     struct termios m_tty = {0};
     bool m_connected = false;
+    std::vector<uint8_t> stored_chunck_ {0};
 };
