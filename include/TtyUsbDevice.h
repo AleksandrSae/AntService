@@ -9,6 +9,7 @@ public:
     virtual void Read(std::vector<uint8_t> &) override;
     virtual bool ReadNextMessage(std::vector<uint8_t> &) override;
     virtual void Write(const std::vector<uint8_t> &) override;
+    virtual void Send(std::vector<uint8_t> const &msg) override { Write(msg); };
     virtual void Connect() override;
     virtual void Disconnect() override;
 

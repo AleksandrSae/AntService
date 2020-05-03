@@ -97,6 +97,15 @@ ant::error Stick::do_command(const std::vector<uint8_t> &message,
     return ant::NO_ERROR;
 }
 
+ant::error Stick::extended_messages(bool enable = false) {
+    LOG_FUNC;
+
+    return this->do_command({Message(ant::ENABLE_EXT_RX_MESGS, {0, static_cast<uint8_t>(enable ? 1 : 0)})},
+                [&] (const std::vector<uint8_t>& buff) -> ant::error {
+                    return ant::NO_ERROR;
+              },
+              ant::CHANNEL_RESPONSE);
+}
 
 ant::error Stick::check_channel_response(const std::vector<uint8_t> &response, uint8_t channel, uint8_t cmd, uint8_t status)
 {
