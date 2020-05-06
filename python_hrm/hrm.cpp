@@ -1,11 +1,8 @@
 #include <iostream>
 #include <string>
-#include <functional>
-#include <iomanip>
+#include <unistd.h>
 
 #include <Python.h>
-
-#include <unistd.h>
 
 #include "TtyUsbDevice.h"
 #include "Stick.h"
@@ -36,7 +33,7 @@ DLLInitialization dllinit_hook;
 
 PyObject* attach(PyObject* self, PyObject* args);
 PyObject* init(PyObject* self, PyObject* args);
-PyObject* hrm_callback(PyObject* self, PyObject* args);
+PyObject* set_callback(PyObject* self, PyObject* args);
 
 static PyMethodDef ModuleFunctions [] =
 {
@@ -46,7 +43,7 @@ static PyMethodDef ModuleFunctions [] =
 	{"init", init, METH_VARARGS,
 	  "intit_device arguments: init()"},
 
-	{"hrm_callback", hrm_callback, METH_VARARGS,
+	{"set_callback", set_callback, METH_VARARGS,
 	  "Call python object that has the __call__ method, acattach arguments: attach(PyObject* pObj*)"},
 
 	// indicate the end of function listing.
@@ -103,7 +100,7 @@ PyObject* init(PyObject* self, PyObject* args)
 }
 
 
-PyObject* hrm_callback(PyObject* self, PyObject* args)
+PyObject* set_callback(PyObject* self, PyObject* args)
 {
 	PyObject* pObj = nullptr;
 
@@ -116,31 +113,34 @@ PyObject* hrm_callback(PyObject* self, PyObject* args)
 	PyObject* pArgs  = nullptr;
 	PyObject* pResult = nullptr;
 
-    double x = 100.;
-    double y = 100.;
-
-    while (y > 0) {
-        uint8_t channel_number;
-        std::vector<uint8_t> payload;
-        uint16_t device_number;
-        uint8_t device_type;
-        uint8_t trans_type;
+    while (true) {
+        uint8_t channel_number {};
+        std::vector<uint8_t> payload {};
+        uint16_t device_number {};
+        uint8_t device_type {};
+        uint8_t trans_type {};
 
         if (stick_shared->ReadExtendedMsg(channel_number, payload, device_number, device_type, trans_type)) {
 
-        //std::cout << "Channel:" << std::dec << (unsigned) channel_number
-        //          << " Payload:\"" << MessageDump(payload)
-        //          << "\" Device number:" << std::dec << (unsigned) device_number
-        //          << " Device type:0x" << std::hex << (unsigned) device_type
-        //          << " Transfer type:0x" << std::hex << (unsigned) trans_type
-        //          << std::endl;
+            std::stringstream json;
 
-            //pArgs  = Py_BuildValue("(d)", x);
-            pArgs = Py_BuildValue("iiiiiiiii", (int)device_number, (int)payload[0], (int)payload[1],
-                                  (int)payload[2], (int)payload[3], (int)payload[4],
-                                  (int)payload[5], (int)payload[6], (int)payload[7]);
-            pResult = PyEval_CallObject(pObj, pArgs);
-            y = PyFloat_AsDouble(pResult);
+            json << "{" << std::endl
+                 << "    \"Device\": " << static_cast<int>(device_number) << "," << std::endl
+                 << "    \"Payload\": [";
+
+            for (auto pl : payload)
+                json << "\"0x" << std::hex << (int)pl << "\",";
+
+            // Remove the latest ','
+            json.seekp(-1, std::ios_base::end);
+            json << "]" << std::endl
+                 << "}";
+
+            pArgs = Py_BuildValue("(s)", json.str().c_str());
+            pResult = PyObject_CallObject(pObj, pArgs);
+
+            if (PyBool_Check(pResult) && pResult == Py_False) break;
+
             if(PyErr_Occurred() != nullptr){
                 PyErr_SetString(PyExc_RuntimeError, "Error: Invalid command.");
 
