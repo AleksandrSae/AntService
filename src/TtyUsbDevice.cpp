@@ -74,8 +74,10 @@ void TtyUsbDevice::Disconnect() {
 }
 
 void TtyUsbDevice::Write(const std::vector<uint8_t> &buff) {
-    if (m_connected)
-        write(m_tty_usb_file, &buff[0], buff.size());
+    if (m_connected) {
+        int bytes = write(m_tty_usb_file, &buff[0], buff.size());
+        if (bytes < 0) std::cerr << "Error writing: " << errno << " : " << strerror(errno) << std::endl;
+    }
 }
 
 void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {

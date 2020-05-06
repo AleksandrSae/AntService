@@ -13,10 +13,13 @@
 #define LOG_FUNC_CALL
 
 #if defined(DEBUG)
+
+#include <string.h>
+
 class LogMessageObject {
 public:
-    LogMessageObject(const char * funcname, std::string file, int line) {
-        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":" << line << "]\x1b[0m" << std::endl;
+    LogMessageObject(const char * funcname, std::string file, unsigned line) {
+        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":" << std::dec << line << "]\x1b[0m" << std::endl;
         this->m_funcname = funcname;
     };
     ~LogMessageObject() {
@@ -28,9 +31,9 @@ private:
 #define LOG_MSG(msg) std::cout << msg << std::endl;
 #define LOG_ERR(msg) std::cerr << msg << std::endl;
 #ifdef LOG_FUNC_CALL
-#define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILENAME__, __LINE__);
+    #define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILENAME__, __LINE__);
 #else
-#define LOG_FUNC
+    #define LOG_FUNC
 #endif
 #else
 #define LOG_MSG(msg)

@@ -12,8 +12,6 @@ int main() {
     stick.QueryInfo();
     stick.Init();
 
-    std::vector<uint8_t> input;
-
     for (int i=0; i<500; i++) {
 
         uint8_t channel_number;
@@ -25,7 +23,7 @@ int main() {
         if (stick.ReadExtendedMsg(channel_number, payload, device_number, device_type, trans_type)) {
 
         std::cout << "Channel:" << std::dec << (unsigned) channel_number
-                  << " Payload:\"" << MessageDump(payload) 
+                  << " Payload:\"" << MessageDump(payload)
                   << "\" Device number:" << std::dec << (unsigned) device_number
                   << " Device type:0x" << std::hex << (unsigned) device_type
                   << " Transfer type:0x" << std::hex << (unsigned) trans_type
