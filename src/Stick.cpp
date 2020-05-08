@@ -1,13 +1,31 @@
+/**
+ *  AntStick -- communicate with an ANT+ USB stick
+ *  Copyright (C) 2017 - 2020 Alex Harsanyi (AlexHarsanyi@gmail.com),
+ *                            Alexey Kokoshnikov (alexeikokoshnikov@gmail.com)
+ *                            Alexander Saechnikov (saechnikov.a@gmail.com)
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or (at your option)
+ *  any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include "Stick.h"
 
-ant::error Stick::get_serial(int& serial) {
+
+ant::error Stick::get_serial(int &serial) {
     LOG_FUNC;
+
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_SERIAL_NUMBER}),
-           [&serial] (const std::vector<uint8_t>& buff) -> ant::error {
-               if (buff.size() < 7) {
-                   LOG_ERR("unexpected message");
-                   return ant::UNEXPECTED_MESSAGE;
-               }
+           [&serial] (std::vector<uint8_t> const &buff) -> ant::error {
                serial = buff[3] | (buff[4] << 8) | (buff[5] << 16) | (buff[6] << 24);
                return ant::NO_ERROR;
            },
@@ -18,11 +36,7 @@ ant::error Stick::get_serial(int& serial) {
 ant::error Stick::get_version(std::string& version) {
     LOG_FUNC;
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_VERSION}),
-           [&version] (const std::vector<uint8_t>& buff) -> ant::error {
-               if (buff.size() < 4) {
-                   LOG_ERR("unexpected message");
-                   return ant::UNEXPECTED_MESSAGE;
-               }
+           [&version] (std::vector<uint8_t> const &buff) -> ant::error {
                version += reinterpret_cast<const char *>(&buff[3]);
                return ant::NO_ERROR;
            },
@@ -30,16 +44,13 @@ ant::error Stick::get_version(std::string& version) {
 }
 
 
-ant::error Stick::get_capabilities(int& max_channels, int& max_networks) {
+ant::error Stick::get_capabilities(unsigned &max_channels, unsigned &max_networks) {
     LOG_FUNC;
+
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_CAPABILITIES}),
-           [&max_channels, &max_networks] (const std::vector<uint8_t>& buff) -> ant::error {
-               if (buff.size() < 2) {
-                   LOG_ERR("unexpected message");
-                   return ant::UNEXPECTED_MESSAGE;
-               }
-               max_channels = (int)buff[3];
-               max_networks = (int)buff[4];
+           [&max_channels, &max_networks] (std::vector<uint8_t> const &buff) -> ant::error {
+               max_channels = (unsigned)buff[3];
+               max_networks = (unsigned)buff[4];
                return ant::NO_ERROR;
            },
            ant::RESPONSE_CAPABILITIES);

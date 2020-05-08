@@ -1,3 +1,23 @@
+/**
+ *  AntStick -- communicate with an ANT+ USB stick
+ *  Copyright (C) 2017 - 2020 Alex Harsanyi (AlexHarsanyi@gmail.com),
+ *                            Alexey Kokoshnikov (alexeikokoshnikov@gmail.com)
+ *                            Alexander Saechnikov (saechnikov.a@gmail.com)
+ *
+ * This program is free software: you can redistribute it and/or modify it
+ *  under the terms of the GNU General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or (at your option)
+ *  any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #pragma once
 
 #include <memory>
@@ -31,7 +51,12 @@ public:
         m_state = CONNECTED;
     }
 
-    bool ReadExtendedMsg(uint8_t &channel_number, std::vector<uint8_t> &payload, uint16_t &device_number, uint8_t &device_type, uint8_t &trans_type) {
+    bool ReadExtendedMsg(uint8_t &channel_number,
+                         std::vector<uint8_t> &payload,
+                         uint16_t &device_number,
+                         uint8_t &device_type,
+                         uint8_t &trans_type)
+    {
         LOG_FUNC;
 
         std::vector<uint8_t> buff {};
@@ -42,7 +67,6 @@ public:
         channel_number = buff[3];
         for (int i=4; i<12; ++i)
             payload.push_back(buff[i]);
-        //device_number = buff[14] << 8 + buff[13];
         device_number = (uint16_t)buff[14] << 8 | (uint16_t)buff[13];
         device_type = buff[15];
         trans_type = buff[16];
@@ -52,7 +76,7 @@ public:
 
     void SendMsg(std::vector<uint8_t> const &buff) {
         LOG_FUNC;
-        m_device->Send(buff);
+        m_device->Write(buff);
     }
 
     void QueryInfo() {
@@ -69,12 +93,16 @@ public:
     }
 
     void Init() {
-        set_network_key(ant::AntPlusNetworkKey);
-        assign_channel(0, 0);
-        set_channel_id(0, 0, HRM::ANT_DEVICE_TYPE);
-        configure_channel(0, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
-        extended_messages(true);
-        open_channel(0);
+        LOG_FUNC;
+
+        ant::error result = ant::NO_ERROR;
+
+        result |= set_network_key(ant::AntPlusNetworkKey);
+        result |= assign_channel(0, 0);
+        result |= set_channel_id(0, 0, HRM::ANT_DEVICE_TYPE);
+        result |= configure_channel(0, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
+        result |= extended_messages(true);
+        result |= open_channel(0);
     }
 
     ant::error Reset();
@@ -83,10 +111,10 @@ private:
     ant::error do_command(const std::vector<uint8_t> &message,
                           std::function<ant::error (const std::vector<uint8_t>&)> check,
                           uint8_t response_msg_type);
-    ant::error get_serial(int& serial);
-    ant::error get_version(std::string& version);
-    ant::error get_capabilities(int& max_channels, int& max_networks);
-    ant::error set_network_key(const std::vector<uint8_t> & network_key);
+    ant::error get_serial(int &serial);
+    ant::error get_version(std::string &version);
+    ant::error get_capabilities(unsigned &max_channels, unsigned &max_networks);
+    ant::error set_network_key(std::vector<uint8_t> const &network_key);
     ant::error extended_messages(bool enabled);
     ant::error assign_channel(uint8_t channel_number, uint8_t network_key);
     ant::error set_channel_id(uint8_t channel_number, uint32_t device_number, uint8_t device_type);
@@ -99,8 +127,8 @@ private:
     std::unique_ptr<Device> m_device;
     std::string m_version;
     int m_serial = 0;
-    int m_channels = 0;
-    int m_networks = 0;
+    unsigned m_channels = 0;
+    unsigned m_networks = 0;
 
     uint32_t m_state;
 };
