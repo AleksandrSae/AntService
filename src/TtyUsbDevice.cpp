@@ -1,18 +1,18 @@
 /**
 *  MIT License
-*  
+*
 *  Copyright (c) 2019 Geoffrey Benjamin Mark Hunter
-*  
+*
 *  Permission is hereby granted, free of charge, to any person obtaining a copy
 *  of this software and associated documentation files (the "Software"), to deal
 *  in the Software without restriction, including without limitation the rights
 *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 *  copies of the Software, and to permit persons to whom the Software is
 *  furnished to do so, subject to the following conditions:
-*  
+*
 *  The above copyright notice and this permission notice shall be included in all
 *  copies or substantial portions of the Software.
-*  
+*
 *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,7 +46,7 @@ void TtyUsbDevice::Connect() {
 
     if (m_connected) return;
 
-    m_tty_usb_file = open(m_device_name.c_str(), O_RDWR);
+    m_tty_usb_file = open(path_to_device_.c_str(), O_RDWR);
 
     // Clean termios struct, we call it 'tty' for convention
     m_tty = {0};
@@ -126,31 +126,4 @@ void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
 
         total_bytes += num_bytes;
     } while (total_bytes <= 4);
-}
-
-bool TtyUsbDevice::ReadNextMessage(std::vector<uint8_t> &message) {
-    LOG_FUNC;
-
-    // Try to find SYNC_BYTE
-    do {
-        auto itt = std::find(stored_chunck_.begin(), stored_chunck_.end(), ant::SYNC_BYTE);
-        if (itt != stored_chunck_.end()) {
-            stored_chunck_.erase(stored_chunck_.begin(), itt);
-            break;
-        }
-        Read(stored_chunck_);
-    } while(true);
-
-    // If message size <4 get new portion
-    while (stored_chunck_.size() < 4)
-        Read(stored_chunck_);
-
-    unsigned int len = (unsigned int)stored_chunck_[1] + 4; // Total lenght is SYNC + LEN + MSGID + DATA  
-    while (stored_chunck_.size() < len)
-        Read(stored_chunck_);
-
-    message = std::vector<uint8_t>(stored_chunck_.begin(), stored_chunck_.begin() + len);
-    stored_chunck_.erase(stored_chunck_.begin(), stored_chunck_.begin() + len);
-
-    return true;
 }

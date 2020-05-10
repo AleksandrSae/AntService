@@ -21,7 +21,93 @@
 #include "Stick.h"
 
 
-ant::error Stick::get_serial(int &serial) {
+void Stick::AttachDevice(std::unique_ptr<Device> && device) {
+    LOG_FUNC;
+
+    device_ = std::move(device);
+}
+
+
+void Stick::Connect() {
+    LOG_FUNC;
+
+    device_->Connect();
+}
+
+
+bool Stick::ReadExtendedMsg(ExtendedMessage& ext_msg) {
+
+    /* Flagged Extended Data Message Format
+     *
+     * | 1B   | 1B     | 1B  | 1B      | 8B      | 1B   | 2B     | 1B     | 1B    | 1B    |
+     * |------|--------|-----|---------|---------|------|--------|--------|-------|-------|
+     * | SYNC | Msg    | Msg | Channel | Payload | Flag | Device | Device | Trans | Check |
+     * |      | Length | ID  | Number  |         | Byte | Number | Type   | Type  | sum   |
+     * |      |        |     |         |         |      |        |        |       |       |
+     * | 0    | 1      | 2   | 3       | 4-11    | 12   | 13,14  | 15     | 16    | 17    |
+     */
+
+    LOG_FUNC;
+
+    std::vector<uint8_t> buff {};
+
+    device_->Read(buff);
+    if (buff.size() != 18 or buff[2] != 0x4e or buff[12] != 0x80) {
+        LOG_ERR("This message is not extended data message");
+        return false;
+    }
+
+    ext_msg.channel_number = buff[3];
+
+    for (int j=0; j<8; j++) {
+        ext_msg.payload[j] = buff[j+4];
+    };
+
+    ext_msg.device_number = (uint16_t)buff[14] << 8 | (uint16_t)buff[13];
+    ext_msg.device_type = buff[15];
+    ext_msg.trans_type = buff[16];
+
+    return true;
+}
+
+
+ant::error Stick::query_info() {
+    LOG_FUNC;
+
+    ant::error result = ant::NO_ERROR;
+
+    result |= get_serial(serial_);
+    LOG_MSG("Serial: " << serial_);
+
+    result |= get_version(version_);
+    LOG_MSG("Version: " << version_);
+
+    result |= get_capabilities(channels_, networks_);
+    LOG_MSG("Channels: " << channels_ << " NetWorks: " << networks_);
+}
+
+
+bool Stick::Init() {
+    LOG_FUNC;
+
+    ant::error result = ant::NO_ERROR;
+
+    result |= query_info();
+    result |= set_network_key(ant::AntPlusNetworkKey);
+    result |= assign_channel(0, 0);
+    result |= set_channel_id(0, 0, HRM::ANT_DEVICE_TYPE);
+    result |= configure_channel(0, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
+    result |= set_extended_messages(true);
+    result |= open_channel(0);
+
+    if (result != ant::NO_ERROR)
+        return false;
+
+    return true;
+}
+
+
+ant::error Stick::get_serial(unsigned &serial) {
     LOG_FUNC;
 
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_SERIAL_NUMBER}),
@@ -35,6 +121,7 @@ ant::error Stick::get_serial(int &serial) {
 
 ant::error Stick::get_version(std::string& version) {
     LOG_FUNC;
+
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_VERSION}),
            [&version] (std::vector<uint8_t> const &buff) -> ant::error {
                version += reinterpret_cast<const char *>(&buff[3]);
@@ -56,6 +143,7 @@ ant::error Stick::get_capabilities(unsigned &max_channels, unsigned &max_network
            ant::RESPONSE_CAPABILITIES);
 }
 
+
 ant::error Stick::set_network_key(const std::vector<uint8_t> & network_key) {
     LOG_FUNC;
 
@@ -66,7 +154,8 @@ ant::error Stick::set_network_key(const std::vector<uint8_t> & network_key) {
            ant::CHANNEL_RESPONSE);
 }
 
-ant::error Stick::Reset() {
+
+ant::error Stick::reset() {
     LOG_FUNC;
 
     return this->do_command(Message(ant::RESET_SYSTEM, {0}),
@@ -81,24 +170,52 @@ ant::error Stick::Reset() {
 }
 
 
+bool Stick::Reset() {
+    return reset() == ant::NO_ERROR ? true : false;
+}
+
+
+bool Stick::ReadNextMessage(std::vector<uint8_t> &message) {
+    LOG_FUNC;
+
+    // Try to find SYNC_BYTE
+    do {
+        auto itt = std::find(stored_chunk_.begin(), stored_chunk_.end(), ant::SYNC_BYTE);
+        if (itt != stored_chunk_.end()) {
+            stored_chunk_.erase(stored_chunk_.begin(), itt);
+            break;
+        }
+        device_->Read(stored_chunk_);
+    } while(true);
+
+    // If message size <4 get new portion
+    while (stored_chunk_.size() < 4)
+        device_->Read(stored_chunk_);
+
+    unsigned int len = (unsigned int)stored_chunk_[1] + 4; // Total lenght is SYNC + LEN + MSGID + DATA
+    while (stored_chunk_.size() < len)
+        device_->Read(stored_chunk_);
+
+    message = std::vector<uint8_t>(stored_chunk_.begin(), stored_chunk_.begin() + len);
+    stored_chunk_.erase(stored_chunk_.begin(), stored_chunk_.begin() + len);
+
+    return true;
+}
+
+
 ant::error Stick::do_command(const std::vector<uint8_t> &message,
                              std::function<ant::error (const std::vector<uint8_t>&)> check_func,
                              uint8_t response_msg_type) {
     LOG_FUNC;
 
-    if (m_state != CONNECTED) {
-        LOG_ERR("device isn't connected");
-        return ant::NOT_CONNECTED;
-    }
-
     LOG_MSG("Write: " << MessageDump(message));
-    m_device->Write(std::move(message));
+    device_->Write(std::move(message));
 
     std::vector<uint8_t> response_msg {};
     do {
-        m_device->ReadNextMessage(response_msg);
+        ReadNextMessage(response_msg);
     } while (response_msg[2] != response_msg_type);
-    
+
     LOG_MSG("Read: " << MessageDump(response_msg));
 
     ant::error status = check_func(response_msg);
@@ -108,7 +225,8 @@ ant::error Stick::do_command(const std::vector<uint8_t> &message,
     return ant::NO_ERROR;
 }
 
-ant::error Stick::extended_messages(bool enable = false) {
+
+ant::error Stick::set_extended_messages(bool enable = false) {
     LOG_FUNC;
 
     return this->do_command({Message(ant::ENABLE_EXT_RX_MESGS, {0, static_cast<uint8_t>(enable ? 1 : 0)})},
@@ -117,6 +235,7 @@ ant::error Stick::extended_messages(bool enable = false) {
               },
               ant::CHANNEL_RESPONSE);
 }
+
 
 ant::error Stick::check_channel_response(const std::vector<uint8_t> &response, uint8_t channel, uint8_t cmd, uint8_t status)
 {
@@ -142,8 +261,6 @@ ant::error Stick::assign_channel(uint8_t channel_number, uint8_t network_number)
 {
     LOG_FUNC;
 
-    // we hard code the type to BIDIRECTIONAL_RECEIVE, using other channel
-    // types would require changes to the handling code anyway.
     ant::error result = this->do_command(Message(ant::ASSIGN_CHANNEL, {
                 channel_number, ant::BIDIRECTIONAL_RECEIVE, network_number}),
            [&] (const std::vector<uint8_t>& buff) -> ant::error {

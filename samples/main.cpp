@@ -4,32 +4,28 @@
 
 int main() {
     Stick stick = Stick();
-    stick.AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice()));
+    stick.AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice("/dev/ttyUSB0")));
 
     stick.Connect();
     stick.Reset();
-    stick.Connect();
-    stick.QueryInfo();
     stick.Init();
 
-    for (int i=0; i<500; i++) {
+    for (int i=0; i<50; i++) {
 
-        uint8_t channel_number;
-        std::vector<uint8_t> payload;
-        uint16_t device_number;
-        uint8_t device_type;
-        uint8_t trans_type;
+        ExtendedMessage msg;
 
-        if (stick.ReadExtendedMsg(channel_number, payload, device_number, device_type, trans_type)) {
+        if (stick.ReadExtendedMsg(msg)) {
+            std::cout << "Channel:" << std::dec << (unsigned) msg.channel_number
+                      << " Payload:";
 
-        std::cout << "Channel:" << std::dec << (unsigned) channel_number
-                  << " Payload:\"" << MessageDump(payload)
-                  << "\" Device number:" << std::dec << (unsigned) device_number
-                  << " Device type:0x" << std::hex << (unsigned) device_type
-                  << " Transfer type:0x" << std::hex << (unsigned) trans_type
-                  << std::endl;
+            for (int j = 0; j < 8; ++j)
+                std::cout << " 0x" << std::hex << (unsigned) msg.payload[j];
+
+            std::cout << " Device number:" << std::dec << (unsigned) msg.device_number
+                      << " Device type:0x" << std::hex << (unsigned) msg.device_type
+                      << " Transfer type:0x" << std::hex << (unsigned) msg.trans_type
+                      << std::endl;
         }
-
     }
 
     return 0;

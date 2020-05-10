@@ -24,8 +24,9 @@
 
 class TtyUsbDevice: public Device {
 public:
+    TtyUsbDevice() : path_to_device_(DEFAULT_TTY_USB_FULL_PATH) {};
+    TtyUsbDevice(std::string const & path_to_device) : path_to_device_(path_to_device) {};
     virtual void Read(std::vector<uint8_t> &) override;
-    virtual bool ReadNextMessage(std::vector<uint8_t> &) override;
     virtual void Write(std::vector<uint8_t> const &) override;
     virtual void Connect() override;
     virtual void Disconnect() override;
@@ -35,7 +36,7 @@ public:
     virtual ~TtyUsbDevice() override;
 
 private:
-    std::string m_device_name = DEFAULT_TTY_USB_DEVICE_NAME;
+    std::string path_to_device_;
     int m_device_baudrate = DEFAULT_TTY_USB_DEVICE_BAUDRATE;
     FileDescriptorType m_tty_usb_file = 0;
     struct termios m_tty {};

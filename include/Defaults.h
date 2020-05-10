@@ -25,7 +25,7 @@
 #include <vector>
 #include <bitset>
 
-#define DEFAULT_TTY_USB_DEVICE_NAME "/dev/ttyUSB0"
+#define DEFAULT_TTY_USB_FULL_PATH "/dev/ttyUSB0"
 #define DEFAULT_TTY_USB_DEVICE_BAUDRATE B115200
 
 namespace HRM {

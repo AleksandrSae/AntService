@@ -15,15 +15,15 @@ struct DLLInitialization
 		int pid;
 		pid = getpid();
 
-		std::cerr << " [TRACE] Python module DLL loaded by process PID = <"
+		std::cerr << "Python module DLL loaded by process PID = <"
 				  << pid << "> "
 				  << std::endl;
 
-		std::cerr << " [TRACE] Attach the debugger with: $ gdb -pid=" << pid << "\n";
+		std::cerr << "Attach the debugger with: $ gdb -pid=" << pid << "\n";
 
 	}
 	~DLLInitialization(){
-		std::cerr << " [TRACE] DLL native DLL unloaded OK." << std::endl;
+		std::cerr << "DLL native DLL unloaded OK." << std::endl;
 	}
 };
 
@@ -44,7 +44,7 @@ static PyMethodDef ModuleFunctions [] =
 	  "intit_device arguments: init()"},
 
 	{"set_callback", set_callback, METH_VARARGS,
-	  "Call python object that has the __call__ method, acattach arguments: attach(PyObject* pObj*)"},
+	  "Call python object that has the __call__ method, set_callback arguments: attach(PyObject* pObj*)"},
 
 	// indicate the end of function listing.
 	{nullptr, nullptr, 0, nullptr}
@@ -83,7 +83,7 @@ PyObject* attach(PyObject* self, PyObject* args)
     std::cout << "Attach Ant USB Stick: " << path_to_device << std::endl;
 
     stick_shared = std::make_shared<Stick>();
-    stick_shared->AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice()));
+    stick_shared->AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice(path_to_device)));
 
     Py_RETURN_NONE;
 }
@@ -93,7 +93,6 @@ PyObject* init(PyObject* self, PyObject* args)
 {
     stick_shared->Connect();
     stick_shared->Reset();
-    stick_shared->QueryInfo();
     stick_shared->Init();
 
     Py_RETURN_NONE;
@@ -114,22 +113,19 @@ PyObject* set_callback(PyObject* self, PyObject* args)
 	PyObject* pResult = nullptr;
 
     while (true) {
-        uint8_t channel_number {};
-        std::vector<uint8_t> payload {};
-        uint16_t device_number {};
-        uint8_t device_type {};
-        uint8_t trans_type {};
 
-        if (stick_shared->ReadExtendedMsg(channel_number, payload, device_number, device_type, trans_type)) {
+        ExtendedMessage msg;
+
+        if (stick_shared->ReadExtendedMsg(msg)) {
 
             std::stringstream json;
 
             json << "{" << std::endl
-                 << "    \"Device\": " << static_cast<int>(device_number) << "," << std::endl
+                 << "    \"Device\": " << static_cast<int>(msg.device_number) << "," << std::endl
                  << "    \"Payload\": [";
 
-            for (auto pl : payload)
-                json << "\"0x" << std::hex << (int)pl << "\",";
+            for (int indx = 0; indx < 8; ++indx)
+                json << "\"0x" << std::hex << (unsigned)msg.payload[indx] << "\",";
 
             // Remove the latest ','
             json.seekp(-1, std::ios_base::end);
