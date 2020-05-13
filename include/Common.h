@@ -40,7 +40,9 @@ class LogMessageObject
 {
 public:
     LogMessageObject(const char * funcname, std::string file, unsigned line) {
-        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":" << std::dec << line << "]\x1b[0m" << std::endl;
+        // Extra symbols make the output coloured
+        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":"
+                  << std::dec << line << "]\x1b[0m" << std::endl;
         this->m_funcname = funcname;
     };
     ~LogMessageObject() {
@@ -68,7 +70,7 @@ inline uint8_t MessageChecksum (std::vector<uint8_t> const &msg)
     LOG_FUNC;
 
     uint8_t checksum = 0;
-    std::for_each (msg.begin(), msg.end(), [&](uint8_t item) { checksum ^= item; });
+    std::for_each(msg.begin(), msg.end(), [&checksum](uint8_t item) { checksum ^= item; });
 
     return checksum;
 }
@@ -94,8 +96,9 @@ inline std::string MessageDump(const std::vector<uint8_t>& data)
 {
     std::stringstream dump;
 
-    for (auto item : data) {
-        dump << "0x" << std::hex << (unsigned)item << " ";
+    for (auto itt = data.begin(); itt != data.end(); ++itt) {
+        if (itt == data.begin()) dump << "0x" << std::hex; else dump << " 0x";
+        dump << (unsigned)(*itt);
     }
 
     return dump.str();

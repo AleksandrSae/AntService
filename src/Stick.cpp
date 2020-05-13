@@ -101,9 +101,11 @@ bool Stick::Init()
 
     result |= query_info();
     result |= set_network_key(ant::AntPlusNetworkKey);
-    result |= assign_channel(0, 0);
-    result |= set_channel_id(0, 0, HRM::ANT_DEVICE_TYPE);
-    result |= configure_channel(0, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
+    // For code simplification, we set some defaults with zero values
+    // TODO: Add default values to Defaults.h
+    result |= assign_channel(0/*network*/, 0/*channel*/);
+    result |= set_channel_id(0/*channel*/, 0/*device*/, HRM::ANT_DEVICE_TYPE);
+    result |= configure_channel(0/*channel*/, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
     result |= set_extended_messages(true);
     result |= open_channel(0);
 
@@ -133,6 +135,7 @@ ant::error Stick::get_version(std::string& version)
 
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_VERSION}),
            [&version] (std::vector<uint8_t> const &buff) -> ant::error {
+           // TODO: Append a string length check by getting the message length from message field
                version += reinterpret_cast<const char *>(&buff[3]);
                return ant::NO_ERROR;
            },
