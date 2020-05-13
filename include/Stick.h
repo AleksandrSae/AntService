@@ -20,12 +20,11 @@
 
 #pragma once
 
-#include <memory>
-#include <functional>
-
 #include "Defaults.h"
 #include "Device.h"
 
+#include <memory>
+#include <functional>
 
 struct ExtendedMessage {
     uint8_t channel_number;
@@ -65,9 +64,9 @@ private:
                                       uint8_t channel, uint8_t cmd, uint8_t status);
 
 private:
-    std::unique_ptr<Device> device_;
+    std::unique_ptr<Device> device_ {nullptr};
     std::vector<uint8_t> stored_chunk_ {};
-    std::string version_;
+    std::string version_ {};
     unsigned serial_ = 0;
     unsigned channels_ = 0;
     unsigned networks_ = 0;

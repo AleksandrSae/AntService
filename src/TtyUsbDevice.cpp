@@ -44,68 +44,66 @@ TtyUsbDevice::~TtyUsbDevice() {
 void TtyUsbDevice::Connect() {
     LOG_FUNC;
 
-    if (m_connected) return;
+    if (connected_) return;
 
-    m_tty_usb_file = open(path_to_device_.c_str(), O_RDWR);
+    tty_usb_file_ = open(path_to_device_.c_str(), O_RDWR);
 
     // Clean termios struct, we call it 'tty' for convention
-    m_tty = {0};
+    tty_ = {0};
 
     // Read in existing settings, and handle any error
-    if(tcgetattr(m_tty_usb_file, &m_tty) != 0) {
+    if(tcgetattr(tty_usb_file_, &tty_) != 0) {
         std::cerr << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
         return;
     }
 
-    m_tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
-    m_tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
-    m_tty.c_cflag |= CS8; // 8 bits per byte (most common)
-    m_tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
-    m_tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
+    tty_.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
+    tty_.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
+    tty_.c_cflag |= CS8; // 8 bits per byte (most common)
+    tty_.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
+    tty_.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
-    m_tty.c_lflag &= ~ICANON;
-    m_tty.c_lflag &= ~ECHO; // Disable echo
-    m_tty.c_lflag &= ~ECHOE; // Disable erasure
-    m_tty.c_lflag &= ~ECHONL; // Disable new-line echo
-    m_tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
-    m_tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-    m_tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
+    tty_.c_lflag &= ~ICANON;
+    tty_.c_lflag &= ~ECHO; // Disable echo
+    tty_.c_lflag &= ~ECHOE; // Disable erasure
+    tty_.c_lflag &= ~ECHONL; // Disable new-line echo
+    tty_.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
+    tty_.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
+    tty_.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
 
-    m_tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-    m_tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-    // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
-    // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
+    tty_.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
+    tty_.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-    m_tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-    m_tty.c_cc[VMIN] = 0;
+    tty_.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty_.c_cc[VMIN] = 0;
 
     // Set in/out baud rate to be 9600
-    cfsetispeed(&m_tty, DEFAULT_TTY_USB_DEVICE_BAUDRATE);
-    cfsetospeed(&m_tty, DEFAULT_TTY_USB_DEVICE_BAUDRATE);
+    cfsetispeed(&tty_, DEFAULT_TTY_USB_DEVICE_BAUDRATE);
+    cfsetospeed(&tty_, DEFAULT_TTY_USB_DEVICE_BAUDRATE);
 
     // Save tty settings, also checking for error
-    if (tcsetattr(m_tty_usb_file, TCSANOW, &m_tty) != 0) {
+    if (tcsetattr(tty_usb_file_, TCSANOW, &tty_) != 0) {
         std::cerr << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
     }
-    m_connected = true;
+    connected_ = true;
 }
 
 void TtyUsbDevice::Disconnect() {
-    if (m_connected) {
-        close(m_tty_usb_file);
-        m_connected = false;
+    if (connected_) {
+        close(tty_usb_file_);
+        connected_ = false;
     }
 }
 
 void TtyUsbDevice::Write(const std::vector<uint8_t> &buff) {
-    if (m_connected) {
-        int bytes = write(m_tty_usb_file, &buff[0], buff.size());
+    if (connected_) {
+        int bytes = write(tty_usb_file_, &buff[0], buff.size());
         if (bytes < 0) std::cerr << "Error writing: " << errno << " : " << strerror(errno) << std::endl;
     }
 }
 
 void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
-    if (!m_connected) return;
+    if (!connected_) return;
 
     char read_buf[256] = {0};
 
@@ -113,7 +111,7 @@ void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
     uint32_t total_bytes = 0;
 
     do {
-        num_bytes = read(m_tty_usb_file, &read_buf, sizeof(read_buf));
+        num_bytes = read(tty_usb_file_, &read_buf, sizeof(read_buf));
 
         if (num_bytes < 0) {
             std::cerr << "Error reading: " << errno << " : " << strerror(errno) << std::endl;

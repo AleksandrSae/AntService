@@ -44,7 +44,8 @@ namespace HRM {
 
 };
 
-namespace ant {
+namespace ant
+{
 enum MessageId {
     SYNC_BYTE = 0xA4,
     INVALID = 0x00,

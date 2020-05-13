@@ -2,7 +2,8 @@
 #include "TtyUsbDevice.h"
 #include "Stick.h"
 
-int main() {
+int main()
+{
     Stick stick = Stick();
     stick.AttachDevice(std::unique_ptr<Device>(new TtyUsbDevice("/dev/ttyUSB0")));
 

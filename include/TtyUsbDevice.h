@@ -20,6 +20,7 @@
 
 #include "Defaults.h"
 #include "Device.h"
+
 #include <string>
 
 class TtyUsbDevice: public Device {
@@ -37,9 +38,9 @@ public:
 
 private:
     std::string path_to_device_;
-    int m_device_baudrate = DEFAULT_TTY_USB_DEVICE_BAUDRATE;
-    FileDescriptorType m_tty_usb_file = 0;
-    struct termios m_tty {};
-    bool m_connected = false;
+    int device_baudrate_ = DEFAULT_TTY_USB_DEVICE_BAUDRATE;
+    FileDescriptorType tty_usb_file_ = 0;
+    struct termios tty_ {};
+    bool connected_ = false;
     std::vector<uint8_t> stored_chunck_ {};
 };

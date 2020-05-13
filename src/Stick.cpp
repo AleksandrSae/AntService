@@ -21,21 +21,24 @@
 #include "Stick.h"
 
 
-void Stick::AttachDevice(std::unique_ptr<Device> && device) {
+void Stick::AttachDevice(std::unique_ptr<Device> && device)
+{
     LOG_FUNC;
 
     device_ = std::move(device);
 }
 
 
-void Stick::Connect() {
+void Stick::Connect()
+{
     LOG_FUNC;
 
     device_->Connect();
 }
 
 
-bool Stick::ReadExtendedMsg(ExtendedMessage& ext_msg) {
+bool Stick::ReadExtendedMsg(ExtendedMessage& ext_msg)
+{
 
     /* Flagged Extended Data Message Format
      *
@@ -71,7 +74,8 @@ bool Stick::ReadExtendedMsg(ExtendedMessage& ext_msg) {
 }
 
 
-ant::error Stick::query_info() {
+ant::error Stick::query_info()
+{
     LOG_FUNC;
 
     ant::error result = ant::NO_ERROR;
@@ -84,10 +88,13 @@ ant::error Stick::query_info() {
 
     result |= get_capabilities(channels_, networks_);
     LOG_MSG("Channels: " << channels_ << " NetWorks: " << networks_);
+
+    return result;
 }
 
 
-bool Stick::Init() {
+bool Stick::Init()
+{
     LOG_FUNC;
 
     ant::error result = ant::NO_ERROR;
@@ -107,7 +114,8 @@ bool Stick::Init() {
 }
 
 
-ant::error Stick::get_serial(unsigned &serial) {
+ant::error Stick::get_serial(unsigned &serial)
+{
     LOG_FUNC;
 
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_SERIAL_NUMBER}),
@@ -119,7 +127,8 @@ ant::error Stick::get_serial(unsigned &serial) {
 }
 
 
-ant::error Stick::get_version(std::string& version) {
+ant::error Stick::get_version(std::string& version)
+{
     LOG_FUNC;
 
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_VERSION}),
@@ -131,7 +140,8 @@ ant::error Stick::get_version(std::string& version) {
 }
 
 
-ant::error Stick::get_capabilities(unsigned &max_channels, unsigned &max_networks) {
+ant::error Stick::get_capabilities(unsigned &max_channels, unsigned &max_networks)
+{
     LOG_FUNC;
 
     return this->do_command(Message(ant::REQUEST_MESSAGE, {0, ant::RESPONSE_CAPABILITIES}),
@@ -144,7 +154,8 @@ ant::error Stick::get_capabilities(unsigned &max_channels, unsigned &max_network
 }
 
 
-ant::error Stick::set_network_key(const std::vector<uint8_t> & network_key) {
+ant::error Stick::set_network_key(const std::vector<uint8_t> & network_key)
+{
     LOG_FUNC;
 
     return this->do_command(Message(ant::SET_NETWORK_KEY, std::move(network_key)),
@@ -155,7 +166,8 @@ ant::error Stick::set_network_key(const std::vector<uint8_t> & network_key) {
 }
 
 
-ant::error Stick::reset() {
+ant::error Stick::reset()
+{
     LOG_FUNC;
 
     return this->do_command(Message(ant::RESET_SYSTEM, {0}),
@@ -175,7 +187,8 @@ bool Stick::Reset() {
 }
 
 
-bool Stick::ReadNextMessage(std::vector<uint8_t> &message) {
+bool Stick::ReadNextMessage(std::vector<uint8_t> &message)
+{
     LOG_FUNC;
 
     // Try to find SYNC_BYTE
@@ -205,7 +218,8 @@ bool Stick::ReadNextMessage(std::vector<uint8_t> &message) {
 
 ant::error Stick::do_command(const std::vector<uint8_t> &message,
                              std::function<ant::error (const std::vector<uint8_t>&)> check_func,
-                             uint8_t response_msg_type) {
+                             uint8_t response_msg_type)
+{
     LOG_FUNC;
 
     LOG_MSG("Write: " << MessageDump(message));
@@ -226,7 +240,8 @@ ant::error Stick::do_command(const std::vector<uint8_t> &message,
 }
 
 
-ant::error Stick::set_extended_messages(bool enable = false) {
+ant::error Stick::set_extended_messages(bool enable = false)
+{
     LOG_FUNC;
 
     return this->do_command({Message(ant::ENABLE_EXT_RX_MESGS, {0, static_cast<uint8_t>(enable ? 1 : 0)})},
@@ -302,10 +317,11 @@ ant::error Stick::set_channel_id(uint8_t channel_number, uint32_t device_number,
 }
 
 
-ant::error Stick::configure_channel(uint8_t channel_number, uint32_t period, uint8_t timeout, uint8_t frequency) {
+ant::error Stick::configure_channel(uint8_t channel_number, uint32_t period, uint8_t timeout, uint8_t frequency)
+{
     LOG_FUNC;
 
-    ant::error result {ant::NO_ERROR};
+    ant::error result = ant::NO_ERROR;
 
     result |= this->do_command({Message(ant::SET_CHANNEL_PERIOD, {
                     channel_number, static_cast<uint8_t>(period & 0xff), static_cast<uint8_t>(period >> 8 & 0xff)
@@ -331,7 +347,8 @@ ant::error Stick::configure_channel(uint8_t channel_number, uint32_t period, uin
 }
 
 
-ant::error Stick::open_channel(uint8_t channel_number) {
+ant::error Stick::open_channel(uint8_t channel_number)
+{
     LOG_FUNC;
 
     return this->do_command({Message(ant::OPEN_CHANNEL, {channel_number})},

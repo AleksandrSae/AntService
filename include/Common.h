@@ -36,7 +36,8 @@
 
 #include <string.h>
 
-class LogMessageObject {
+class LogMessageObject
+{
 public:
     LogMessageObject(const char * funcname, std::string file, unsigned line) {
         std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":" << std::dec << line << "]\x1b[0m" << std::endl;
@@ -48,6 +49,7 @@ public:
 private:
     std::string m_funcname;
 };
+
 #define LOG_MSG(msg) std::cout << msg << std::endl;
 #define LOG_ERR(msg) std::cerr << msg << std::endl;
 #ifdef LOG_FUNC_CALL
@@ -72,7 +74,8 @@ inline uint8_t MessageChecksum (std::vector<uint8_t> const &msg)
 }
 
 
-inline std::vector<uint8_t> Message(ant::MessageId id, std::vector<uint8_t> const &data) {
+inline std::vector<uint8_t> Message(ant::MessageId id, std::vector<uint8_t> const &data)
+{
     LOG_FUNC;
 
     std::vector<uint8_t> yield;
@@ -83,11 +86,12 @@ inline std::vector<uint8_t> Message(ant::MessageId id, std::vector<uint8_t> cons
     yield.insert(yield.end(), data.begin(), data.end());
     yield.push_back(MessageChecksum(yield));
 
-    return std::move(yield);
+    return yield;
 }
 
 
-inline std::string MessageDump(const std::vector<uint8_t>& data) {
+inline std::string MessageDump(const std::vector<uint8_t>& data)
+{
     std::stringstream dump;
 
     for (auto item : data) {

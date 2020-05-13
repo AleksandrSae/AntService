@@ -1,8 +1,8 @@
+#include <Python.h>
+
 #include <iostream>
 #include <string>
 #include <unistd.h>
-
-#include <Python.h>
 
 #include "TtyUsbDevice.h"
 #include "Stick.h"
