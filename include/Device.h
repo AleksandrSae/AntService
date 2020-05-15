@@ -22,9 +22,10 @@
 
 class Device {
 public:
-    virtual void Read(std::vector<uint8_t> &) = 0;
-    virtual void Write(std::vector<uint8_t> const &) = 0;
-    virtual void Connect() = 0;
-    virtual void Disconnect() = 0;
+    virtual bool Read(std::vector<uint8_t> &) = 0;
+    virtual bool Write(std::vector<uint8_t> const &) = 0;
+    virtual bool Connect() = 0;
+    virtual bool IsConnected() = 0;
+    virtual bool Disconnect() = 0;
     virtual ~Device() {}
 };

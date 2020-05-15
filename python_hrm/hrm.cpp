@@ -50,6 +50,7 @@ static PyMethodDef ModuleFunctions [] =
 	{nullptr, nullptr, 0, nullptr}
 };
 
+
 // Module definition
 static struct PyModuleDef ModuleDefinitions {
 	PyModuleDef_HEAD_INIT,
@@ -62,6 +63,7 @@ static struct PyModuleDef ModuleDefinitions {
 	ModuleFunctions
 };
 
+
 // Module Initialization function
 PyMODINIT_FUNC PyInit_hrm(void)
 {
@@ -72,7 +74,7 @@ PyMODINIT_FUNC PyInit_hrm(void)
 }
 
 
-// =========  Functions of the Python Module ======== //
+// Functions of the Python Module
 
 PyObject* attach(PyObject* self, PyObject* args)
 {
@@ -91,9 +93,14 @@ PyObject* attach(PyObject* self, PyObject* args)
 
 PyObject* init(PyObject* self, PyObject* args)
 {
-    stick_shared->Connect();
-    stick_shared->Reset();
-    stick_shared->Init();
+    if (!stick_shared->Connect())
+        return Py_False;
+
+    if (!stick_shared->Reset())
+        return Py_False;
+
+    if (!stick_shared->Init())
+        return Py_False;
 
     Py_RETURN_NONE;
 }
@@ -127,7 +134,7 @@ PyObject* set_callback(PyObject* self, PyObject* args)
             for (int indx = 0; indx < 8; ++indx)
                 json << "\"0x" << std::hex << (unsigned)msg.payload[indx] << "\",";
 
-            // Remove the latest ','
+            // Replace the latest ','
             json.seekp(-1, std::ios_base::end);
             json << "]" << std::endl
                  << "}";
@@ -144,5 +151,6 @@ PyObject* set_callback(PyObject* self, PyObject* args)
             }
         }
     }
+
     Py_RETURN_NONE;
 };

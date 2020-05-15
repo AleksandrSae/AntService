@@ -27,20 +27,18 @@ class TtyUsbDevice: public Device {
 public:
     TtyUsbDevice() : path_to_device_(DEFAULT_TTY_USB_FULL_PATH) {};
     TtyUsbDevice(std::string const & path_to_device) : path_to_device_(path_to_device) {};
-    virtual void Read(std::vector<uint8_t> &) override;
-    virtual void Write(std::vector<uint8_t> const &) override;
-    virtual void Connect() override;
-    virtual void Disconnect() override;
-
-    typedef int FileDescriptorType;
+    virtual bool Read(std::vector<uint8_t> &) override;
+    virtual bool Write(std::vector<uint8_t> const &) override;
+    virtual bool Connect() override;
+    virtual bool IsConnected() override { return connected_; }
+    virtual bool Disconnect() override;
 
     virtual ~TtyUsbDevice() override;
 
 private:
     std::string path_to_device_;
     int device_baudrate_ = DEFAULT_TTY_USB_DEVICE_BAUDRATE;
-    FileDescriptorType tty_usb_file_ = 0;
+    int tty_usb_file_ = 0;
     struct termios tty_ {};
     bool connected_ = false;
-    std::vector<uint8_t> stored_chunck_ {};
 };

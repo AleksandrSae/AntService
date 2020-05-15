@@ -41,10 +41,14 @@ TtyUsbDevice::~TtyUsbDevice() {
     this->Disconnect();
 }
 
-void TtyUsbDevice::Connect() {
+
+bool TtyUsbDevice::Connect() {
     LOG_FUNC;
 
-    if (connected_) return;
+    if (connected_) {
+        std::cerr << "Device is already connected." << std::endl;
+        return false;
+    }
 
     tty_usb_file_ = open(path_to_device_.c_str(), O_RDWR);
 
@@ -54,7 +58,7 @@ void TtyUsbDevice::Connect() {
     // Read in existing settings, and handle any error
     if(tcgetattr(tty_usb_file_, &tty_) != 0) {
         std::cerr << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
-        return;
+        return false;
     }
 
     tty_.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
@@ -74,7 +78,7 @@ void TtyUsbDevice::Connect() {
     tty_.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
     tty_.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
-    tty_.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
+    tty_.c_cc[VTIME] = 10; // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
     tty_.c_cc[VMIN] = 0;
 
     // Set in/out baud rate to be 9600
@@ -85,25 +89,47 @@ void TtyUsbDevice::Connect() {
     if (tcsetattr(tty_usb_file_, TCSANOW, &tty_) != 0) {
         std::cerr << "Error " << errno << " from tcgetattr: " << strerror(errno) << std::endl;
     }
+
     connected_ = true;
+    return true;
 }
 
-void TtyUsbDevice::Disconnect() {
+
+bool TtyUsbDevice::Disconnect() {
     if (connected_) {
-        close(tty_usb_file_);
+        if (close(tty_usb_file_) < 0) {
+            std::cerr << "Error reading: " << errno << " : " << strerror(errno) << std::endl;
+            return false;
+        }
         connected_ = false;
     }
+    return true;
 }
 
-void TtyUsbDevice::Write(const std::vector<uint8_t> &buff) {
-    if (connected_) {
-        int bytes = write(tty_usb_file_, &buff[0], buff.size());
-        if (bytes < 0) std::cerr << "Error writing: " << errno << " : " << strerror(errno) << std::endl;
+
+bool TtyUsbDevice::Write(const std::vector<uint8_t> &buff) {
+    if (!connected_) {
+        std::cerr << "Device is not connected." << std::endl;
+        return false;
     }
+
+    int bytes = write(tty_usb_file_, &buff[0], buff.size());
+
+    if (bytes < 0) {
+        std::cerr << "Error writing: " << errno << " : " << strerror(errno) << std::endl;
+        return false;
+    }
+
+    return true;
 }
 
-void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
-    if (!connected_) return;
+
+bool TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
+
+    if (!connected_) {
+        std::cerr << "Device is not connected." << std::endl;
+        return false;
+    }
 
     char read_buf[256] = {0};
 
@@ -115,7 +141,7 @@ void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
 
         if (num_bytes < 0) {
             std::cerr << "Error reading: " << errno << " : " << strerror(errno) << std::endl;
-            return;
+            return false;
         }
 
         for (unsigned int i = 0; i < num_bytes; i++) {
@@ -124,4 +150,6 @@ void TtyUsbDevice::Read(std::vector<uint8_t> &buff) {
 
         total_bytes += num_bytes;
     } while (total_bytes <= 4);
+
+    return true;
 }

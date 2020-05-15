@@ -39,23 +39,30 @@
 class LogMessageObject
 {
 public:
-    LogMessageObject(const char * funcname, std::string file, unsigned line) {
+    LogMessageObject(std::string const &funcname, std::string const &path_to_file, unsigned line) {
+
+        auto found = path_to_file.rfind("/");
+
         // Extra symbols make the output coloured
-        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m[" << file << ":"
-                  << std::dec << line << "]\x1b[0m" << std::endl;
-        this->m_funcname = funcname;
+        std::cout << "+ \x1b[31m" << funcname << " \x1b[33m["
+                  << (found == std::string::npos ? path_to_file : path_to_file.substr(found + 1))
+                  << ":" << line << "]\x1b[0m" << std::endl;
+
+        this->funcname_ = funcname;
     };
+
     ~LogMessageObject() {
-        std::cout << "- \x1b[31m" << this->m_funcname << "\x1b[0m" << std::endl;
+        std::cout << "- \x1b[31m" << this->funcname_ << "\x1b[0m" << std::endl;
     };
+
 private:
-    std::string m_funcname;
+    std::string funcname_;
 };
 
 #define LOG_MSG(msg) std::cout << msg << std::endl;
 #define LOG_ERR(msg) std::cerr << msg << std::endl;
 #ifdef LOG_FUNC_CALL
-    #define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILENAME__, __LINE__);
+    #define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILE__, __LINE__);
 #else
     #define LOG_FUNC
 #endif

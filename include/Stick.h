@@ -39,7 +39,7 @@ class Stick {
 public:
 
     void AttachDevice(std::unique_ptr<Device> && device);
-    void Connect();
+    bool Connect();
     bool Reset();
     bool Init();
     bool ReadNextMessage(std::vector<uint8_t> &);
@@ -48,20 +48,20 @@ public:
 private:
     ant::error do_command(const std::vector<uint8_t> &message,
                           std::function<ant::error (const std::vector<uint8_t>&)> process,
-                          uint8_t wait_response_messege_type);
+                          uint8_t wait_response_message_type);
     ant::error reset();
     ant::error query_info();
     ant::error get_serial(unsigned &serial);
     ant::error get_version(std::string &version);
     ant::error get_capabilities(unsigned &max_channels, unsigned &max_networks);
+    ant::error check_channel_response(const std::vector<uint8_t> &response,
+                                      uint8_t channel, uint8_t cmd, uint8_t status);
     ant::error set_network_key(std::vector<uint8_t> const &network_key);
     ant::error set_extended_messages(bool enabled);
     ant::error assign_channel(uint8_t channel_number, uint8_t network_key);
     ant::error set_channel_id(uint8_t channel_number, uint32_t device_number, uint8_t device_type);
     ant::error configure_channel(uint8_t channel_number, uint32_t period, uint8_t timeout, uint8_t frequency);
     ant::error open_channel(uint8_t channel_number);
-    ant::error check_channel_response(const std::vector<uint8_t> &response,
-                                      uint8_t channel, uint8_t cmd, uint8_t status);
 
 private:
     std::unique_ptr<Device> device_ {nullptr};
