@@ -46,7 +46,7 @@ public:
         // Extra symbols make the output coloured
         std::cout << "+ \x1b[31m" << funcname << " \x1b[33m["
                   << (found == std::string::npos ? path_to_file : path_to_file.substr(found + 1))
-                  << ":" << line << "]\x1b[0m" << std::endl;
+                  << ":" << std::dec << line << "]\x1b[0m" << std::endl;
 
         this->funcname_ = funcname;
     };
