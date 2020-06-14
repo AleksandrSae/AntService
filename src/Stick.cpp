@@ -150,8 +150,10 @@ ant::error Stick::do_command(const std::vector<uint8_t> &message,
     LOG_MSG("Read: " << MessageDump(response_msg));
 
     ant::error status = check_func(response_msg);
-    if (status != ant::NO_ERROR)
+    if (status != ant::NO_ERROR) {
+        LOG_ERR("Returns with error status: " << status);
         return status;
+    }
 
     return ant::NO_ERROR;
 }

@@ -102,7 +102,7 @@ PyObject* init(PyObject* self, PyObject* args)
     if (!stick_shared->Init())
         return Py_False;
 
-    Py_RETURN_NONE;
+    Py_RETURN_TRUE;
 }
 
 

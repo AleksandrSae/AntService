@@ -16,7 +16,10 @@ call_back = Callable()
 
 hrm.attach('/dev/ttyUSB0')
 
-if not hrm.init():
+status = hrm.init()
+print(f"Initialisation status {status}")
+
+if not status:
     exit(1)
 
 hrm.set_callback(call_back)
