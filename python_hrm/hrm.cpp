@@ -23,7 +23,7 @@ struct DLLInitialization
 
 	}
 	~DLLInitialization(){
-		std::cerr << "DLL native DLL unloaded OK." << std::endl;
+		std::cerr << "DLL unloaded OK." << std::endl;
 	}
 };
 
