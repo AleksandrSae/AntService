@@ -33,5 +33,5 @@ To run the sample application, open a command window and type:
 The application will try to find the ANT+ USB stick and connect to the heart
 rate monitor.
 
-To test python module, open the command line inteface window and type:
+To test python module, open the command line interface window and type:
     python3 test_application.py
