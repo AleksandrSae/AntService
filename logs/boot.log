@@ -1,0 +1,22 @@
+Armbian 20.02.1 Buster ttyS0
+
+orangepizero login: ant
+Password:***
+
+  ___  ____  _   _____
+ / _ \|  _ \(_) |__  /___ _ __ ___
+| | | | |_) | |   / // _ \ '__/ _ \
+| |_| |  __/| |  / /|  __/ | | (_) |
+ \___/|_|   |_| /____\___|_|  \___/
+
+Welcome to Armbian buster with Linux 5.4.45-sunxi
+
+System load:   4.70 1.48 0.52   Up time:       1 min
+Memory usage:  26 % of 239MB    Zram usage:    13 % of 119Mb    IP:            192.168.0.6
+CPU temp:      57°C
+Usage of /:    76% of 1.6G
+
+[ General system configuration (beta): armbian-config ]
+
+
+ant@orangepizero:~$

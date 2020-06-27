@@ -1,41 +1,37 @@
 # Read data
 
-This is a service allowing to read data from ANT+ devices. It can currently
-read heart rate from an ANT+ HRM.
+This is a prototype of application allowing to read data from ANT+ devices based on AntService project https://github.com/akokoshn/AntService. It can currently read heart rate from an ANT+ HRM.
 
 ## Dependencies
-
-lubusb - https://github.com/libusb/libusb
-
-gtests - https://github.com/google/googletest
+Linux, g++, python3, distutils
 
 ## Building the application
 
-The application is built on a Windows platform using Visual Studio 2019 (the
-Community Edition will work fine) and Linux.
+The application can be built on the Linux only.
 
-1. Get AntService create directory 'build' got to build (`mkdir build && cd build`)
+1. Get AntService, create directory 'build' (`mkdir build && cd build`)
 2. Create make files by cmake:
-    * Linux: `cmake ..`
-    * Windows: `cmake -A x64 -G "Visual Studio 16 2019" ..`
-3. Build service:
-    * Linux: `make`
-    * Windows:
-        * `MSBuild AntService.vcxproj /property:Configuration=Release /property:Platform=x64`
-        * `MSBuild tests/api_tests.vcxproj /property:Configuration=Release /property:Platform=x64` - build tests
-        * `MSBuild samples/sample.vcxproj /property:Configuration=Release /property:Platform=x64` - build sample
+    `cmake ..`
+3. Build sample application:
+    `make`
+4. Go to folder `python_hrm`, run build command:
+    `python3 setup.py build`
+5. Install the builded module
+    `sudo python3 setup.py install`
 
 ## SetUp environment
-
-To connet with Ant device need to install libusbK driver.
-You can use Zadig (https://zadig.akeo.ie/) application: select your Ant device and libusbK driver.
+Setup python3 developer package.
 
 ## Running the application
+Connect ANT+ USB Transiver, check that USB device is connected:
+    `dmesg`
 
-To run the application, open a command window and type:
+To run the sample application, open a command window and type:
 
     ./sample.exe
 
 The application will try to find the ANT+ USB stick and connect to the heart
 rate monitor.
 
+To test python module, oprn a command window and type:
+    python3 test_application.py

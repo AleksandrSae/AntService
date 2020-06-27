@@ -1,0 +1,296 @@
++ [31mAttachDevice [33m[Stick.cpp:26][0m
+- [31mAttachDevice[0m
++ [31mConnect [33m[Stick.cpp:34][0m
++ [31mConnect [33m[TtyUsbDevice.cpp:46][0m
+- [31mConnect[0m
+- [31mConnect[0m
++ [31mreset [33m[Stick.cpp:164][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x1 0x4a 0x0 0xef
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x1 0x6f 0x20 0xea
+- [31mdo_command[0m
+- [31mreset[0m
++ [31mInit [33m[Stick.cpp:49][0m
++ [31mquery_info [33m[Stick.cpp:180][0m
++ [31mget_serial [33m[Stick.cpp:199][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x4d 0x0 0x61 0x8a
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x4 0x61 0x83 0x22 0x27 0x12 0x55
+- [31mdo_command[0m
+- [31mget_serial[0m
+Serial: 304554627
++ [31mget_version [33m[Stick.cpp:212][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x4d 0x0 0x3e 0xd5
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0xb 0x3e 0x41 0x50 0x32 0x55 0x53 0x42 0x31 0x2e 0x30 0x35 0x0 0xec
+- [31mdo_command[0m
+- [31mget_version[0m
+Version: AP2USB1.05
++ [31mget_capabilities [33m[Stick.cpp:226][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x4d 0x0 0x54 0xbf
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x6 0x54 0x8 0x3 0x0 0xba 0x36 0x0 0x71
+- [31mdo_command[0m
+- [31mget_capabilities[0m
+Channels: 8 NetWorks: 3
+- [31mquery_info[0m
++ [31mset_network_key [33m[Stick.cpp:260][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x9 0x46 0x0 0xb9 0xa5 0x21 0xfb 0xbd 0x72 0xc3 0x45 0x64
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x46 0x0 0xa1
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
+- [31mset_network_key[0m
++ [31massign_channel [33m[Stick.cpp:284][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x3 0x42 0x0 0x0 0x0 0xe5
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x42 0x0 0xa5
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
+Assign channel number: 0 network: 0
+- [31massign_channel[0m
++ [31mset_channel_id [33m[Stick.cpp:302][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x5 0x51 0x0 0x0 0x0 0x78 0x0 0x88
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x51 0x0 0xb6
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
+Set channel id: channel number: 0 device number: 0 device type: 78
+- [31mset_channel_id[0m
++ [31mconfigure_channel [33m[Stick.cpp:329][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x3 0x43 0x0 0x86 0x1f 0x7d
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x43 0x0 0xa4
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x44 0x0 0x1e 0xfc
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x44 0x0 0xa3
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x45 0x0 0x39 0xda
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x45 0x0 0xa2
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
+- [31mconfigure_channel[0m
++ [31mset_extended_messages [33m[Stick.cpp:272][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x2 0x66 0x0 0x1 0xc1
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x66 0x0 0x81
+- [31mdo_command[0m
+- [31mset_extended_messages[0m
++ [31mopen_channel [33m[Stick.cpp:359][0m
++ [31mMessage [33m[Common.h:88][0m
++ [31mMessageChecksum [33m[Common.h:77][0m
+- [31mMessageChecksum[0m
+- [31mMessage[0m
++ [31mdo_command [33m[Stick.cpp:140][0m
+Write: 0xa4 0x1 0x4b 0x0 0xee
++ [31mReadNextMessage [33m[Stick.cpp:72][0m
+- [31mReadNextMessage[0m
+Read: 0xa4 0x3 0x40 0x0 0x4b 0x0 0xac
++ [31mcheck_channel_response [33m[Stick.cpp:240][0m
+- [31mcheck_channel_response[0m
+- [31mdo_command[0m
+- [31mopen_channel[0m
+- [31mInit[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x84 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x1 0x8 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
+Channel:0 Payload: 0x4 0x0 0x0 0x0 0x0 0x0 0x0 0x0 Device number:41981 Device type:0x78 Transfer type:0x61
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31mReadExtendedMsg [33m[Stick.cpp:112][0m
+- [31mReadExtendedMsg[0m
++ [31m~TtyUsbDevice [33m[TtyUsbDevice.cpp:39][0m
+- [31m~TtyUsbDevice[0m
