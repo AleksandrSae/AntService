@@ -29,13 +29,8 @@
 // Show debug info
 #define DEBUG
 
-// Show functions call
-#define LOG_FUNC_CALL
-
 #if defined(DEBUG)
-
 #include <string.h>
-
 class LogMessageObject
 {
 public:
@@ -58,18 +53,14 @@ public:
 private:
     std::string funcname_;
 };
-
 #define LOG_MSG(msg) std::cout << msg << std::endl;
 #define LOG_ERR(msg) std::cerr << msg << std::endl;
-#ifdef LOG_FUNC_CALL
-    #define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILE__, __LINE__);
-#else
-    #define LOG_FUNC
-#endif
-#else
+#define LOG_FUNC LogMessageObject lmsgo__(__func__, __FILE__, __LINE__);
+#else // DEBUG
 #define LOG_MSG(msg)
 #define LOG_ERR(msg)
-#endif
+#define LOG_FUNC
+#endif // DEBUG
 
 
 inline uint8_t MessageChecksum (std::vector<uint8_t> const &msg)
