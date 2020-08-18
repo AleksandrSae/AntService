@@ -48,19 +48,19 @@ bool Stick::Init()
 {
     LOG_FUNC;
 
-    ant::error result = ant::NO_ERROR;
+    ant::error status = ant::NO_ERROR;
 
-    result |= query_info();
-    result |= set_network_key(ant::AntPlusNetworkKey);
+    status |= query_info();
+    status |= set_network_key(ant::AntPlusNetworkKey);
     // For code simplification, we set some defaults with zero values
     // TODO: Add default values to Defaults.h
-    result |= assign_channel(0/*network*/, 0/*channel*/);
-    result |= set_channel_id(0/*channel*/, 0/*device*/, HRM::ANT_DEVICE_TYPE);
-    result |= configure_channel(0/*channel*/, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
-    result |= set_extended_messages(true);
-    result |= open_channel(0);
+    status |= assign_channel(0/*network*/, 0/*channel*/);
+    status |= set_channel_id(0/*channel*/, 0/*device*/, HRM::ANT_DEVICE_TYPE);
+    status |= configure_channel(0/*channel*/, HRM::CHANNEL_PERIOD, HRM::SEARCH_TIMEOUT, HRM::CHANNEL_FREQUENCY);
+    status |= set_extended_messages(true);
+    status |= open_channel(0);
 
-    if (result != ant::NO_ERROR)
+    if (status != ant::NO_ERROR)
         return false;
 
     return true;
@@ -179,18 +179,18 @@ ant::error Stick::query_info()
 {
     LOG_FUNC;
 
-    ant::error result = ant::NO_ERROR;
+    ant::error status = ant::NO_ERROR;
 
-    result |= get_serial(serial_);
+    status |= get_serial(serial_);
     LOG_MSG("Serial: " << serial_);
 
-    result |= get_version(version_);
+    status |= get_version(version_);
     LOG_MSG("Version: " << version_);
 
-    result |= get_capabilities(channels_, networks_);
+    status |= get_capabilities(channels_, networks_);
     LOG_MSG("Channels: " << channels_ << " NetWorks: " << networks_);
 
-    return result;
+    return status;
 }
 
 
@@ -283,17 +283,17 @@ ant::error Stick::assign_channel(uint8_t channel_number, uint8_t network_number)
 {
     LOG_FUNC;
 
-    ant::error result = this->do_command(Message(ant::ASSIGN_CHANNEL, {
+    ant::error status = this->do_command(Message(ant::ASSIGN_CHANNEL, {
                 channel_number, ant::BIDIRECTIONAL_RECEIVE, network_number}),
            [this, channel_number] (const std::vector<uint8_t>& buff) -> ant::error {
                return this->check_channel_response(buff, channel_number, ant::ASSIGN_CHANNEL, 0);
            },
            ant::CHANNEL_RESPONSE);
 
-    if (result == ant::NO_ERROR)
+    if (status == ant::NO_ERROR)
         LOG_MSG("Assign channel number: " << std::dec << (unsigned)channel_number << " network: " << std::dec << (unsigned)network_number); 
 
-    return result;
+    return status;
 }
 
 
@@ -301,7 +301,7 @@ ant::error Stick::set_channel_id(uint8_t channel_number, uint32_t device_number,
 {
     LOG_FUNC;
 
-    ant::error result = this->do_command(Message(ant::SET_CHANNEL_ID, {
+    ant::error status = this->do_command(Message(ant::SET_CHANNEL_ID, {
                                          channel_number,
                                          static_cast<uint8_t>(device_number & 0xFF),
                                          static_cast<uint8_t>((device_number >> 8) & 0xFF),
@@ -315,12 +315,12 @@ ant::error Stick::set_channel_id(uint8_t channel_number, uint32_t device_number,
            },
            ant::CHANNEL_RESPONSE);
 
-    if (result == ant::NO_ERROR)
+    if (status == ant::NO_ERROR)
         LOG_MSG("Set channel id: channel number: " << std::hex << (unsigned)channel_number
                 << " device number: " << std::hex << (unsigned)device_number
                 << " device type: " << std::hex << (unsigned)device_type);
 
-    return result;
+    return status;
 }
 
 
@@ -328,9 +328,9 @@ ant::error Stick::configure_channel(uint8_t channel_number, uint32_t period, uin
 {
     LOG_FUNC;
 
-    ant::error result = ant::NO_ERROR;
+    ant::error status = ant::NO_ERROR;
 
-    result |= this->do_command({Message(ant::SET_CHANNEL_PERIOD, {
+    status |= this->do_command({Message(ant::SET_CHANNEL_PERIOD, {
                     channel_number, static_cast<uint8_t>(period & 0xff), static_cast<uint8_t>(period >> 8 & 0xff)
                 })},
                 [this, channel_number] (const std::vector<uint8_t>& buff) -> ant::error {
@@ -338,19 +338,19 @@ ant::error Stick::configure_channel(uint8_t channel_number, uint32_t period, uin
               },
               ant::CHANNEL_RESPONSE);
 
-    result |= this->do_command({Message(ant::SET_CHANNEL_SEARCH_TIMEOUT, {channel_number, timeout})},
+    status |= this->do_command({Message(ant::SET_CHANNEL_SEARCH_TIMEOUT, {channel_number, timeout})},
                 [this, channel_number] (const std::vector<uint8_t>& buff) -> ant::error {
                     return this->check_channel_response(buff, channel_number, ant::SET_CHANNEL_SEARCH_TIMEOUT, 0);
               },
               ant::CHANNEL_RESPONSE);
 
-    result |= this->do_command({Message(ant::SET_CHANNEL_RF_FREQ, {channel_number, frequency})},
+    status |= this->do_command({Message(ant::SET_CHANNEL_RF_FREQ, {channel_number, frequency})},
                 [this, channel_number] (const std::vector<uint8_t>& buff) -> ant::error {
                     return this->check_channel_response(buff, channel_number, ant::SET_CHANNEL_RF_FREQ, 0);
               },
               ant::CHANNEL_RESPONSE);
 
-    return result;
+    return status;
 }
 
 
