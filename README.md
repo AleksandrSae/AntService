@@ -28,7 +28,7 @@ Connect ANT+ USB Transiver, check that USB device is connected:
 
 To run the sample application, open a command window and type:
 
-    ./sample.exe
+    ./sample
 
 The application will try to find the ANT+ USB stick and connect to the heart
 rate monitor.
